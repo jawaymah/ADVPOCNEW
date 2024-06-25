@@ -1,0 +1,333 @@
+﻿<Page   x:Class="AdvansysPOC.FabricationManagerView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:s="clr-namespace:System;assembly=mscorlib"
+        xmlns:cc="clr-namespace:AdvansysPOC"
+        xmlns:c="clr-namespace:AdvansysPOC"
+        mc:Ignorable="d"
+        Title="Assembly Manager"
+        UseLayoutRounding="True"
+        Height="270.8"
+        Width="417.102">
+
+    <!--Page Color-->
+    <Page.Background>
+        <SolidColorBrush Color="White" />
+    </Page.Background>
+
+    <!--Main Grid-->
+    <Grid Margin="0,2">
+
+        <!--Row Definitions-->
+        <Grid.RowDefinitions>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <!--Internal Grid-->
+        <Grid Grid.Row="0" Margin="0,0,0,2" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition />
+                <RowDefinition Height="25"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.5*"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="29"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Column="0"
+                      Grid.Row="1"
+                      Grid.ColumnSpan="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="28" />
+                        <ColumnDefinition Width="28" />
+                    </Grid.ColumnDefinitions>
+                    <DockPanel Grid.Column="0" 
+                               FocusManager.FocusedElement="{Binding ElementName=SearchControl}"
+                               Margin="0,0,0,0"
+                               HorizontalAlignment="Stretch">
+                    </DockPanel>
+
+                </Grid>
+            </Grid>
+
+            <!--Grid for Tabs-->
+            <Grid Grid.Row="1" Margin="0,0,0,0">
+                <TabControl x:Name="tabControl" Margin="0,3,0,0">
+
+                    <!--Tab Assemblies-->
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal" MinWidth="50">
+                                <TextBlock Margin="3,0,0,0" Text="Assemblies" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </TabItem.Header>
+
+                        <!--Assemblies Grid-->
+                        <Grid x:Name="assembliesGrid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="107*"/>
+                                <ColumnDefinition Width="11*"/>
+                                <ColumnDefinition Width="293*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="22" />
+                            </Grid.RowDefinitions>
+
+
+                            <TextBlock Text="No Assembly in Context" 
+                                       Margin="0,71,140,70"
+                                       Grid.Column="2"
+                                       TextAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       IsHitTestVisible="False"
+                                       Focusable="False"
+                                       Visibility="{Binding Assemblies}"/>
+
+                            <DockPanel  Grid.Row="1" Grid.ColumnSpan="3">
+                                
+                                <!--<cc:ImageButton HorizontalAlignment="Left"
+                                                EnabledImage="/FabricationTools;component/Resources/sheetIcon.png"
+                                                DisabledImage="/FabricationTools;component/Resources/sheetIcon.png"
+                                                ToolTip="Correct Spooling Sheet Names"
+                                                Click="CorrectSpoolSheets_Click"
+                                                />-->
+
+
+                                <Label HorizontalAlignment="Right"                                     
+                                       Content="{Binding TotalNumberOfAssemblies}"
+                                       Margin="0, 0, 5, 0"/>
+                            </DockPanel>
+                        </Grid>
+                    </TabItem>
+                    <!-- End Tab and GridView Assemblies -->
+
+                    <!--Tab Groups-->
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal" MinWidth="50">
+                                <TextBlock Margin="3,0,0,0" Text="Groups" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </TabItem.Header>
+
+                        <!--Groups-->
+                        <Grid  x:Name="groupsGrid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="55*"/>
+                                <ColumnDefinition Width="124*"/>
+                                <ColumnDefinition Width="232*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0"></RowDefinition>
+                                <RowDefinition Height="*"></RowDefinition>
+                                <RowDefinition Height="22"/>
+                            </Grid.RowDefinitions>
+
+                            <!--End Group ExtendedGrid-->
+
+                            <TextBlock Text="No Groups in Context" 
+                                       Margin="0,30,80,0"
+                                       Grid.Column="1"
+                                       Grid.Row="1"
+                                       TextAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       IsHitTestVisible="False"
+                                       Focusable="False"
+                                       Visibility="{Binding Groups}" Grid.ColumnSpan="2"/>
+
+                            <DockPanel FlowDirection="LeftToRight"
+                                       Grid.Row="2" Grid.ColumnSpan="3">
+
+                                <Label HorizontalAlignment="Right"                                     
+                                       Content="{Binding TotalNumberOfGroups}"
+                                       Margin="0, 0, 5, 0"/>
+                            </DockPanel>
+                        </Grid>
+                    </TabItem>
+                    <!--END TAB Groups -->
+
+                    <!--TAB ITEM Packages-->
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal" MinWidth="50">
+                                <TextBlock Margin="3,0,0,0" Text="Packages" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </TabItem.Header>
+
+                        <Grid x:Name="packagesGrid">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="22" />
+                            </Grid.RowDefinitions>
+
+                            <DockPanel FlowDirection="LeftToRight"
+                                       Grid.Row="1">
+
+                                <Label HorizontalAlignment="Right"                                     
+                                       Content="{Binding TotalNumberOfPackages}"
+                                       Margin="0, 0, 5, 0"/>
+                            </DockPanel>
+
+                            <TextBlock Text="No Packages in Context" 
+                                       Margin="0,0,0,0"
+                                       Grid.Column="1"
+                                       Grid.Row="0"
+                                       TextAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       IsHitTestVisible="False"
+                                       Focusable="False"
+                                       Visibility="{Binding Packages}"/>
+                        </Grid>
+                    </TabItem>
+                    <!--END Packages-->
+
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal" MinWidth="50">
+                                <TextBlock Margin="3,0,0,0" Text="Orders" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </TabItem.Header>
+
+                        <Grid x:Name="ordersGrid">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="22" />
+                            </Grid.RowDefinitions>
+
+                            <DockPanel FlowDirection="LeftToRight"
+                                       Grid.Row="1">
+
+                            </DockPanel>
+
+
+                            <!--END GRID ORDERS-->
+
+                            <DockPanel FlowDirection="LeftToRight"
+                                       Grid.Row="1">
+                                
+                                <Label HorizontalAlignment="Right"                                     
+                                       Content="{Binding TotalNumberOfOrders}"
+                                       Margin="0, 0, 5, 0"/>
+                            </DockPanel>
+
+                            <TextBlock Text="No Orders in Context" 
+                                       Margin="0,0,0,0"
+                                       Grid.Column="1"
+                                       Grid.Row="0"
+                                       TextAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       IsHitTestVisible="False"
+                                       Focusable="False"
+                                       Visibility="{Binding Orders}"/>
+                        </Grid>
+                    </TabItem>
+                    <!--END TAB ORDERS-->
+
+                </TabControl>
+                <!--END TAB CONTROL-->
+            </Grid>
+
+            <!--Grid For Export Buttons & Spool Buttons-->
+            <Grid Grid.Row="2" Margin="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="0.5*" />
+                </Grid.ColumnDefinitions>
+                <DockPanel Margin="0,0,0,0"
+                           LastChildFill="False">
+                    <!--<cc:ImageButton EnabledImage="/FabTools;component/Resources/sort_name_down16.png"
+                                    DisabledImage="/FabTools;component/Resources/sort_name_downDisabled16.png"
+                                    ToolTip="Order Ascending"
+                                    Command="{Binding SortAssembliesByNameCommand}"
+                                    CommandParameter="True" />
+                    <cc:ImageButton EnabledImage="/FabTools;component/Resources/sort_name_up16.png"
+                                    DisabledImage="/FabTools;component/Resources/sort_name_upDisabled16.png"
+                                    ToolTip="Order Descending"
+                                    Command="{Binding SortAssembliesByNameCommand}"
+                                    CommandParameter="False" />
+                    <cc:ImageButton EnabledImage="/FabTools;component/Resources/moveup16.png"
+                                    DisabledImage="/FabTools;component/Resources/moveupDisabled16.png"
+                                    ToolTip="Move Up"
+                                    Command="{Binding MoveAssembliesUpCommand}"
+                                    CommandParameter="True" />
+                    <cc:ImageButton EnabledImage="/FabTools;component/Resources/movedown16.png"
+                                    DisabledImage="/FabTools;component/Resources/movedownDisabled16.png"
+                                    ToolTip="Move Down"
+                                    Command="{Binding MoveAssembliesDownCommand}"
+                                    CommandParameter="False" />
+
+                    <cc:ImageButton EnabledImage="/FabTools;component/Resources/add16.png"
+                                    DisabledImage="/FabTools;component/Resources/addDisabled16.png"
+                                    ToolTip="Open Views"
+                                    Command="{Binding OpenViewsListCommand}"
+                                    CommandParameter="True" />
+                    <cc:ImageButton EnabledImage="/FabTools;component/Resources/excel_logo32.png"
+                                    DisabledImage="/FabTools;component/Resources/excel_logoDisabled32.png"
+                                    ToolTip="Export to Excel"
+                                    Command="{Binding ShowExportOptionsCommand}" />
+
+                    <cc:ImageButton EnabledImage="/FabTools;component/Resources/spec_book32.png"
+                                    DisabledImage="/FabTools;component/Resources/spec_book_disabled32.png"
+                                    ToolTip="Export Fabrication Report"
+                                    Command="{Binding SpecbookAssembliesCommand}" />
+                    <cc:ImageButton EnabledImage="/FabTools;component/Resources/majIcon32.png"
+                                    DisabledImage="/FabTools;component/Resources/majIcon_disabled32.png"
+                                    ToolTip="Export to MAJ"
+                                    Command="{Binding ExportSelectedAssembliesJobsCommand}" />
+                    <cc:ImageButton EnabledImage="/FabTools;component/Resources/EstiLogo32.png"
+                                    DisabledImage="/FabTools;component/Resources/EstiLogo32_Disabled.png"
+                                    ToolTip="Export to EstiFrame"
+                                    Command="{Binding ExportToEstiFrameCommand}" />
+                    <cc:ImageButton EnabledImage="/FabTools;component/Resources/pypeserver32.png"
+                                    DisabledImage="/FabTools;component/Resources/pypeserver_disabled32.png"
+                                    ToolTip="Export to Pypeserver"
+                                    Command="{Binding ExportPartsCSVToPypeserverCommand}" />
+                    <cc:ImageButton EnabledImage="/FabTools;component/Resources/RazorGage32.png"
+                                    DisabledImage="/FabTools;component/Resources/RazorGage_disabled32.png"
+                                    ToolTip="Export to RazorGage"
+                                    Command="{Binding ExportPartsCSVToRazorGageCommand}" />
+                    <cc:ImageButton EnabledImage="/FabTools;component/Resources/tigerstop_logo32.png"
+                                    DisabledImage="/FabTools;component/Resources/tigerstop_logo_Disabled32.png"
+                                    ToolTip="Export to TigerStop"
+                                    Command="{Binding ExportPartsCSVToTigerstopCommand}" />-->
+
+
+
+                </DockPanel>
+                <DockPanel FlowDirection="LeftToRight"
+                                           Grid.Column="1"
+                                           HorizontalAlignment="Right"
+                                           Margin="0 0 1 0">
+
+                                                    <!--Command="{Binding ExtractSettingsFromAssemblyCommand}" />-->
+
+                    <Button Content="SPOOL"
+                                            Command="{Binding SpoolCommand}"
+                                            BorderBrush="Orange"
+                                            Height="20"
+                                            ToolTip="Spool selected assemblies" Margin="0,0,0,1" Width="67" />
+
+
+                </DockPanel>
+                <DockPanel Grid.Column="1"
+                           HorizontalAlignment="Right">
+
+                </DockPanel>
+            </Grid>
+        </Grid>
+
+    </Grid>
+
+
+
+</Page>

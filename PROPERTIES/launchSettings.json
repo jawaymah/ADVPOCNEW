@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Inicio": {
+      "commandName": "Executable",
+      "executablePath": "D:\\Software\\Installation\\Revit 2025\\Revit.exe"
+    }
+  }
+}

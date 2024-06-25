@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>Application Advansys</Name>
+    <Assembly>AdvansysPOCAddin.dll</Assembly>
+    <FullClassName>AdvansysPOC.App</FullClassName>
+    <ClientId>938f1cf6-4298-445c-89a1-9aee3aa59408</ClientId>
+    <VendorId>Advansys-ESC</VendorId>
+    <VendorDescription>Advansys-ESC</VendorDescription>
+  </AddIn>
+</RevitAddIns>

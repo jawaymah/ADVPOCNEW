@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32804.467
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TemplateRevitCs", "TemplateRevitCs.csproj", "{4122F0F0-9EE5-4DFB-965F-3FC70B82E61D}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "AdvansysPOCSetup", "..\AdvansysPOCSetup\AdvansysPOCSetup.vdproj", "{F2F6C2C4-9DE2-4CEA-AA68-06D563464B58}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4122F0F0-9EE5-4DFB-965F-3FC70B82E61D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4122F0F0-9EE5-4DFB-965F-3FC70B82E61D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4122F0F0-9EE5-4DFB-965F-3FC70B82E61D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4122F0F0-9EE5-4DFB-965F-3FC70B82E61D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2F6C2C4-9DE2-4CEA-AA68-06D563464B58}.Debug|Any CPU.ActiveCfg = Debug
+		{F2F6C2C4-9DE2-4CEA-AA68-06D563464B58}.Release|Any CPU.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8F1CF5B3-CD6D-47EC-9BB3-1616C6AFBC37}
+	EndGlobalSection
+EndGlobal
