@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using AdvansysPOC.Helpers;
+using AdvansysPOC.PROPERTIES;
 using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
@@ -155,71 +156,29 @@ namespace AdvansysPOC
 
             if (panelName == "GenericConveyors")
             {
-
-                PushButtonData buttonDataDimensions = new PushButtonData("Generic", "Generic", Assembly.GetExecutingAssembly().Location, "AdvansysPOC.GenericStraightConveyorCommand");
-                //                buttonDataDimensions.LargeImage = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //"dimension32.png"), UriKind.Absolute));
-                //                buttonDataDimensions.Image = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //                    "dimension32.png"), UriKind.Absolute));
-                //buttonDataDimensions.LargeImage = new BitmapImage(new Uri(Path.Combine(@"C:\Users\Jemmy\source\repos\AdvansysPOC\AdvansysPOC\Resources", "add32.png"), UriKind.Absolute));
+                var buttonDataDimensions = RevitUi.AddPushButtonData("Create\n Generic Unit", typeof(GenericStraightConveyorCommand), Resources.add32, typeof(DocumentAvailablility));
+                var buttonFlip = RevitUi.AddPushButtonData("Flip\n Generic Hand", typeof(FlipGenericHandCommand), Resources.element_move32, typeof(DocumentAvailablility));
+                var buttonConvert = RevitUi.AddPushButtonData("Convert To Detail", typeof(ConvertToDetailCommand), Resources.convertToDetail, typeof(DocumentAvailablility));
+                var sym3Convert = RevitUi.AddPushButtonData("Export To Sym3", typeof(Sym3ExportCommand), Resources.excelIcon32, typeof(DocumentAvailablility));
                 Autodesk.Revit.UI.RibbonItem PulldownButtons3 = panel.AddItem(buttonDataDimensions);
-
-                PushButtonData buttonFlip = new PushButtonData("FlipGenericSide", "Flip Generic Hand", Assembly.GetExecutingAssembly().Location, "AdvansysPOC.FlipGenericHandCommand");
-                //                buttonDataDimensions.LargeImage = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //"dimension32.png"), UriKind.Absolute));
-                //                buttonDataDimensions.Image = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //                    "dimension32.png"), UriKind.Absolute));
-                //buttonDataDimensions.LargeImage = new BitmapImage(new Uri(Path.Combine(@"C:\Users\Jemmy\source\repos\AdvansysPOC\AdvansysPOC\Resources", "add32.png"), UriKind.Absolute));
                 Autodesk.Revit.UI.RibbonItem flipButton = panel.AddItem(buttonFlip);
-
-                PushButtonData buttonConvert = new PushButtonData("ConvertToDetail", "Convert To Detail", Assembly.GetExecutingAssembly().Location, "AdvansysPOC.ConvertToDetailCommand");
-                //                buttonDataDimensions.LargeImage = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //"dimension32.png"), UriKind.Absolute));
-                //                buttonDataDimensions.Image = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //                    "dimension32.png"), UriKind.Absolute));
-                //buttonDataDimensions.LargeImage = new BitmapImage(new Uri(Path.Combine(@"C:\Users\Jemmy\source\repos\AdvansysPOC\AdvansysPOC\Resources", "add32.png"), UriKind.Absolute));
                 Autodesk.Revit.UI.RibbonItem convertButton = panel.AddItem(buttonConvert);
-
-                PushButtonData sym3Convert = new PushButtonData("Sym3Export", "Export To Sym3", Assembly.GetExecutingAssembly().Location, "AdvansysPOC.Sym3ExportCommand");
-                //                buttonDataDimensions.LargeImage = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //"dimension32.png"), UriKind.Absolute));
-                //                buttonDataDimensions.Image = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //                    "dimension32.png"), UriKind.Absolute));
-                //buttonDataDimensions.LargeImage = new BitmapImage(new Uri(Path.Combine(@"C:\Users\Jemmy\source\repos\AdvansysPOC\AdvansysPOC\Resources", "add32.png"), UriKind.Absolute));
                 Autodesk.Revit.UI.RibbonItem sym3Button = panel.AddItem(sym3Convert);
             }
             if (panelName == "Supports")
             {
                 PulldownButtonData pullButtonDataRegular = new PulldownButtonData("Regular", "Regular");
-                //pullButtonDataRegular.LargeImage = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //    "support16.png"), UriKind.Absolute));
-                //pullButtonDataRegular.Image = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //    "support16.png"), UriKind.Absolute));
-
-
 
                 PulldownButtonData pullButtonBracingData = new PulldownButtonData("Bracing", "Bracing");
-                //pullButtonBracingData.LargeImage = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //    "supportbracing16.png"), UriKind.Absolute));
-                //pullButtonBracingData.Image = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //    "supportbracing16.png"), UriKind.Absolute));
 
                 PulldownButtonData pullButtonSpecialData = new PulldownButtonData("Special", "Special");
-                //pullButtonSpecialData.LargeImage = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //    "supportspecial16.png"), UriKind.Absolute));
-                //pullButtonSpecialData.Image = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //    "supportspecial16.png"), UriKind.Absolute));
 
                 IList<Autodesk.Revit.UI.RibbonItem> stackedPulldownButtons = panel.AddStackedItems(pullButtonDataRegular, pullButtonBracingData, pullButtonSpecialData);
 
             }
             if (panelName == "Manager")
             {
-                PushButtonData AddbuttonData = new PushButtonData("Manager", "Manager \n Show/Hide", Assembly.GetExecutingAssembly().Location, "AdvansysPOC.FabricationManagerDisplayCommand");
-                //                AddbuttonData.LargeImage = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //"add32.png"), UriKind.Absolute));
-                //                AddbuttonData.Image = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
-                //                    "add32.png"), UriKind.Absolute));
+                var AddbuttonData = RevitUi.AddPushButtonData("Manager \n Show/Hide", typeof(FabricationManagerDisplayCommand), Resources.editViewports32, typeof(DocumentAvailablility));
                 Autodesk.Revit.UI.RibbonItem PulldownButtons3 = panel.AddItem(AddbuttonData);
             }
             // Add other panels as necessary
