@@ -2,7 +2,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 
-namespace AdvansysPOC.Commands
+namespace AdvansysPOC
 {
     [Transaction(TransactionMode.Manual)]
     public class FabricationManagerDisplayCommand : IExternalCommand

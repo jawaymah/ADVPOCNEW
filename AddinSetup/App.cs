@@ -179,6 +179,14 @@ namespace AdvansysPOC
                 //                    "dimension32.png"), UriKind.Absolute));
                 //buttonDataDimensions.LargeImage = new BitmapImage(new Uri(Path.Combine(@"C:\Users\Jemmy\source\repos\AdvansysPOC\AdvansysPOC\Resources", "add32.png"), UriKind.Absolute));
                 Autodesk.Revit.UI.RibbonItem convertButton = panel.AddItem(buttonConvert);
+
+                PushButtonData sym3Convert = new PushButtonData("Sym3Export", "Export To Sym3", Assembly.GetExecutingAssembly().Location, "AdvansysPOC.Sym3ExportCommand");
+                //                buttonDataDimensions.LargeImage = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
+                //"dimension32.png"), UriKind.Absolute));
+                //                buttonDataDimensions.Image = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
+                //                    "dimension32.png"), UriKind.Absolute));
+                //buttonDataDimensions.LargeImage = new BitmapImage(new Uri(Path.Combine(@"C:\Users\Jemmy\source\repos\AdvansysPOC\AdvansysPOC\Resources", "add32.png"), UriKind.Absolute));
+                Autodesk.Revit.UI.RibbonItem sym3Button = panel.AddItem(sym3Convert);
             }
             if (panelName == "Supports")
             {
@@ -207,7 +215,7 @@ namespace AdvansysPOC
             }
             if (panelName == "Manager")
             {
-                PushButtonData AddbuttonData = new PushButtonData("Manager", "Manager", Assembly.GetExecutingAssembly().Location, "AdvansysPOC.FabricationManagerDisplayCommand");
+                PushButtonData AddbuttonData = new PushButtonData("Manager", "Manager \n Show/Hide", Assembly.GetExecutingAssembly().Location, "AdvansysPOC.FabricationManagerDisplayCommand");
                 //                AddbuttonData.LargeImage = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
                 //"add32.png"), UriKind.Absolute));
                 //                AddbuttonData.Image = new BitmapImage(new Uri(Path.Combine(UIConstants.ButtonIconsFolder,
