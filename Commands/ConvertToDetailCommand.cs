@@ -26,7 +26,7 @@ namespace AdvansysPOC
                     Element e = Doc.GetElement(id);
                     if (e != null && e is FamilyInstance)
                     {
-                        if ((e as FamilyInstance).Symbol.FamilyName == "Straight")
+                        //if ((e as FamilyInstance).Symbol.FamilyName == "Straight")
                             genericFamilies.Add(e as FamilyInstance);
                     }
                 }
@@ -34,14 +34,15 @@ namespace AdvansysPOC
             if (genericFamilies.Count == 0) {
                 message = "There are no Generic family selected";
                 return Result.Failed; 
-            } 
+            }
+            LiverRollerConversionManager managner = new LiverRollerConversionManager();
 
             using (Transaction tr = new Transaction(Doc))
             {
                 tr.Start("Converting to Detail");
                 foreach (var family in genericFamilies)
                 {
-                    var detailed = ConversionManager.ConvertToDetail(family);
+                    var detailed = managner.ConvertToDetailed(family);
                 }
 
 

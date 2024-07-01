@@ -60,7 +60,7 @@ namespace AdvansysPOC.Helpers
         {
             ElementId projectId = doc.ProjectInformation.Id;
             Element projectInfoElement = doc.GetElement(projectId);
-            Parameter param = projectInfoElement.LookupParameter(ParametersConstants.LastUnitId); // Refresh the parameter reference
+            Parameter param = projectInfoElement.LookupParameter(Constants.LastUnitId); // Refresh the parameter reference
             if (param != null && !param.IsReadOnly)
             {
                 //TODO anything on existing project
@@ -105,7 +105,7 @@ namespace AdvansysPOC.Helpers
         {
             ElementId projectId = doc.ProjectInformation.Id;
             Element projectInfoElement = doc.GetElement(projectId);
-            Parameter param = projectInfoElement.LookupParameter(ParametersConstants.LastUnitId); // Refresh the parameter reference
+            Parameter param = projectInfoElement.LookupParameter(Constants.LastUnitId); // Refresh the parameter reference
             if (param != null && !param.IsReadOnly)
             {
                 return param;
