@@ -1,16 +1,31 @@
-﻿using Autodesk.Revit.DB;
+﻿using AdvansysPOC.Helpers;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.ApplicationServices;
+using Autodesk.Revit.UI;
 using Autodesk.Windows;
 using System;
 using System.Collections.Generic;
+using System.IO.Packaging;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using Autodesk.Revit.DB.Structure;
+using System.Windows.Forms;
 
 namespace AdvansysPOC.Logic
 {
     internal class convertToDetailed
     {
+
+        const string entryBedFamilyName = "C380_ENTRY";
+        const string exitBedFamilyName = "C380_EXIT";
+        const string inter351BedFamilyName = "C351";
+        const string inter352BedFamilyName = "C352";
+        const string preExitBedFamilyName = "C353";
+
+
 
         public Line getGenericCL(FamilyInstance instance)
         {
@@ -44,31 +59,68 @@ namespace AdvansysPOC.Logic
         }
 
 
-        public FamilySymbol getProperSymbol(string bedName, double bedWidth)
+        private FamilySymbol FindFamilySymbol(Document doc, Family family, string symbolName)
         {
-            FamilySymbol familySymbol = null;
+            // Get all symbols (types) of the loaded family
+            FilteredElementCollector collector = new FilteredElementCollector(doc);
+            IList<Element> symbols = collector.OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_GenericModel).ToList();
 
-            //Do logic here to get the proper type based on the bed name and width and maybe other stuff...
-
-            return familySymbol;
+            // Find the symbol with the specified name
+            foreach (Element element in symbols)
+            {
+                FamilySymbol symbol = element as FamilySymbol;
+                if (symbol != null && symbol.Family.Id == family.Id && symbol.Name == symbolName)
+                {
+                    return symbol;
+                }
+            }
+            return null;
         }
 
 
-        public void ConvertToDetailed(FamilyInstance instance)
+        public XYZ PlaceBed(Document doc, FamilySymbol symbol, XYZ pos, double length)
+        {
+            if (symbol != null)
+            {
+
+                // Create a line representing the location and direction of the linear element
+                // First assuming horizontal conveyor...
+                XYZ endPoint = new XYZ(pos.X + length, pos.Y, pos.Z); // End point based on length
+                Line line = Line.CreateBound(pos, endPoint);
+
+
+                // Place the family instance
+                using (Transaction tx = new Transaction(doc))
+                {
+                    tx.Start("Place Linear Family Instance");
+
+                    // Place the family instance along the line
+                    FamilyInstance instance = doc.Create.NewFamilyInstance(line, symbol, doc.ActiveView);
+
+                    tx.Commit();
+                    return endPoint;
+                }
+
+            }
+            return pos;
+        }
+
+
+            public void ConvertToDetailed(FamilyInstance instance)
         {
             Document doc = instance.Document;
 
             // Get parameter values
-            Parameter lengthParam = instance.LookupParameter("Conveyor Length");
-            Parameter widthParam = instance.LookupParameter("Conveyor Width");
-            Parameter zoneLengthParam = instance.LookupParameter("Zone Length");
-            Parameter typeParam = instance.LookupParameter("Conveyor Type");
+            Parameter lengthParam = instance.LookupParameter("Conveyor_OAL");
+            Parameter widthParam = instance.LookupParameter("Conveyor_OAW");
+            Parameter zoneLengthParam = instance.LookupParameter("Zone_Length");
+            Parameter typeParam = instance.LookupParameter("Conveyor_Type");
 
             if (lengthParam != null && typeParam != null)
             {
                 // Read all needed parameters values
                 double conveyorLength = lengthParam.AsDouble();
-                double conveyorWidth = widthParam.AsDouble();
+                int conveyorWidth = widthParam.AsInteger();
                 double zoneLength = zoneLengthParam.AsDouble();
                 string conveyorType = typeParam.AsValueString();
 
@@ -78,12 +130,25 @@ namespace AdvansysPOC.Logic
                 startPoint = cl.GetEndPoint(0);
                 endPoint = cl.GetEndPoint(1);
 
+                //Gathering Families...
+                Family family = null; // I need to get the family using its name or path and load it to the project...
+
+
                 //Getting bed types to be placed...
                 FamilySymbol entryBed, exitBed, ctfBed, withBrakeBed, repetitiveBed;
 
+                entryBed = FindFamilySymbol(doc, family, "C380-ENTRY-" + conveyorWidth.ToString() + "\"");
+                exitBed = FindFamilySymbol(doc, family, "C380-EXIT-" + conveyorWidth.ToString() + "\"");
+                //entryBed = FindFamilySymbol(doc, family, "C380-ENTRY-" + conveyorWidth.ToString() + "\"");
+                //entryBed = FindFamilySymbol(doc, family, "C380-ENTRY-" + conveyorWidth.ToString() + "\"");
+
+                
+                // We need to calculate how much instances we need for each symbol, and how long is each of them...
+                // count may be zero for some symbols, constant one for entry and exit and ctf, varies for intermediates...
 
                 //Placing beds in order...
-
+                XYZ entryEndPoint = PlaceBed(doc, entryBed, startPoint, zoneLength == 24 ? 2.5 : 3.5);
+                //XYZ 
 
                 //Grouping beds into an assembly...
 
