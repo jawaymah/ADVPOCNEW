@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using AdvansysPOC.Commands.EventCommands;
 using AdvansysPOC.Events;
 using AdvansysPOC.Helpers;
 using AdvansysPOC.PROPERTIES;
@@ -34,7 +35,7 @@ namespace AdvansysPOC
 
                 // Add panels to the custom tab
                 AddRibbonPanel(a, tabName, "GenericConveyors");
-
+                AddRibbonPanel(a, tabName, "DetailedConveyors");
                 AddRibbonPanel(a, tabName, "Manager");
                 a.SelectionChanged += Elements_SelectionChanged;
                 CurrentApplication = a;
@@ -174,6 +175,28 @@ namespace AdvansysPOC
                 Autodesk.Revit.UI.RibbonItem flipButton = panel.AddItem(buttonFlip);
                 Autodesk.Revit.UI.RibbonItem convertButton = panel.AddItem(buttonConvert);
                 Autodesk.Revit.UI.RibbonItem sym3Button = panel.AddItem(sym3Convert);
+            }
+            if (panelName == "DetailedConveyors")
+            {
+                //IList<Autodesk.Revit.UI.RibbonItem> stackedPulldownButtons = panel.AddStackedItems(pullButtonDataRegular, pullButtonBracingData, pullButtonSpecialData);
+                var pullButtonDetailed = RevitUi.AddPullDownButtonData("DetailedConveyors", "Detailed Conveyors");
+                Autodesk.Revit.UI.PulldownButton PulldownButtons = panel.AddItem(pullButtonDetailed) as PulldownButton;
+
+                //creat Detailed beds commands
+                var enterenceData = RevitUi.AddPushButtonData("Enterence Bed", typeof(CreateEnterenceBedCommand), Resources.add32, typeof(DocumentAvailablility));
+                var ExitData = RevitUi.AddPushButtonData("Exit Bed", typeof(CreateExitBedCommand), Resources.add32, typeof(DocumentAvailablility));
+                var IntermediateData = RevitUi.AddPushButtonData("Intermediate Bed", typeof(CreateIntermediateBedCommand), Resources.add32, typeof(DocumentAvailablility));
+                var CTFData = RevitUi.AddPushButtonData("CTF Bed", typeof(CreateCutToFitCommand), Resources.add32, typeof(DocumentAvailablility));
+                var DriveData = RevitUi.AddPushButtonData("Drive", typeof(CreateDriveCommand), Resources.add32, typeof(DocumentAvailablility));
+                var SupportData = RevitUi.AddPushButtonData("Support", typeof(CreateSupportCommand), Resources.add32, typeof(DocumentAvailablility));
+
+                PulldownButtons.AddPushButton(enterenceData);
+                PulldownButtons.AddPushButton(ExitData);
+                PulldownButtons.AddPushButton(IntermediateData);
+                PulldownButtons.AddPushButton(CTFData);
+                PulldownButtons.AddSeparator();
+                PulldownButtons.AddPushButton(DriveData);
+                PulldownButtons.AddPushButton(SupportData);
             }
             if (panelName == "Supports")
             {

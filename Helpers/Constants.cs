@@ -19,5 +19,7 @@ namespace AdvansysPOC
         public static string IntermediateFamilyFileName = "LastUnitId";
         public static string DriveFamilyName = "LastUnitId";
         public static string DriveFamilyFileName = "LastUnitId";
+        public static string SupportFamilyFileName = "LastUnitId";
+        public static string SupportFamilyName = "LastUnitId";
     }
 }

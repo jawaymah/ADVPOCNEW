@@ -92,6 +92,20 @@ namespace AdvansysPOC
             return buttonData;
         }
 
+
+        /// <summary>
+        /// Create the info for one pushButton as PushButtonData
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="targetClass"></param>
+        /// <returns></returns>
+        public static PulldownButtonData AddPullDownButtonData(string name, string title)
+        {
+            string path = Assembly.GetExecutingAssembly().Location;
+            var buttonData = new PulldownButtonData(name, title);
+            return buttonData;
+        }
+
         /// <summary>
         /// Add a new split button which is separated 
         /// </summary>

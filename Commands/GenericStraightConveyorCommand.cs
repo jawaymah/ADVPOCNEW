@@ -28,8 +28,6 @@ namespace AdvansysPOC
                 UIApplication uiApp = commandData.Application;
                 Document doc = commandData.Application.ActiveUIDocument.Document;
 
-                uiApp.DialogBoxShowing += UiApp_DialogBoxShowing;
-
                 if (symbol == null)
                 {
                     Family family = FamilyHelper.FindFamilyByName(doc, basicFamilyName);
@@ -52,7 +50,6 @@ namespace AdvansysPOC
                             t.Commit();
                         }
                     }
-                    uiApp.DialogBoxShowing -= UiApp_DialogBoxShowing;
 
                     // Assume the family has a family symbol (family type)
                     FamilySymbol familySymbol = null;
@@ -92,16 +89,6 @@ namespace AdvansysPOC
                 message = ex.Message;
                 return Result.Failed;
             }
-        }
-
-        private void UiApp_DialogBoxShowing(object sender, Autodesk.Revit.UI.Events.DialogBoxShowingEventArgs e)
-        {
-
-        }
-
-        private void Application_DocumentChanged(object sender, DocumentChangedEventArgs e)
-        {
-
         }
     }
 
