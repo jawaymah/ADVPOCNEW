@@ -24,13 +24,15 @@ namespace AdvansysPOC
         private ExternalEvent m_ExEvent;
         private DockablePanelEvent m_Handler;
 
+        public FabricationManagerViewModel ViewModel { get; set; }
         /// <summary>
         /// Ctor
         /// </summary>
         public FabricationManagerView()
         {
             InitializeComponent();
-            this.DataContext = new FabricationManagerViewModel();
+            ViewModel = new FabricationManagerViewModel();
+            this.DataContext = ViewModel;
 
         }
 
@@ -40,7 +42,8 @@ namespace AdvansysPOC
         public FabricationManagerView(DockablePanelEvent handler, ExternalEvent e)
         {
             InitializeComponent();
-            this.DataContext = new FabricationManagerViewModel();
+            ViewModel = new FabricationManagerViewModel();
+            this.DataContext = ViewModel;
             m_ExEvent = e;
             m_Handler = handler;
         }
@@ -95,7 +98,7 @@ namespace AdvansysPOC
 
         public void UpdateSelection(List<ElementId> ids)
         {
-
+            ViewModel.CurrentUnit = new UI.DetailedUnitViewModel();
         }
     }
 }

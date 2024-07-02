@@ -5,8 +5,23 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AdvansysPOC.UI.DockablePanel.View"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-            
+        <StackPanel>
+            <TextBlock Text="Unit Id:"/>
+            <TextBox Text="{Binding UnitId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <TextBlock Text="Type:"/>
+            <TextBox Text="{Binding Type, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <TextBlock Text="Beds:"/>
+            <ListBox ItemsSource="{Binding Beds}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <local:DetailedBedView DataContext="{Binding}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
     </Grid>
 </UserControl>
