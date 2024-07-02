@@ -13,7 +13,7 @@ namespace AdvansysPOC.Logic.Sym3Export
 {
     public class Sym3Exporter
     {
-        static void RunTestFile()
+        public static void RunTestFile()
         {
             string filePath = "output.xlsx";
 

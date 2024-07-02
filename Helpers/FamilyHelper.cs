@@ -33,8 +33,8 @@ namespace AdvansysPOC.Helpers
         public static void SetUnitId(this FamilyInstance instance)
         {
             //TODO
-            ParametersHelper.SetParameter(instance, Constants.ConveyorNumber, "1001" /*ParametersHelper.GetLastUnitId()*/);
-            //ParametersHelper.SetLastUnitId();
+            //ParametersHelper.SetParameter(instance, Constants.ConveyorNumber, "1001" /*ParametersHelper.GetLastUnitId()*/);
+            ParametersHelper.SetLastUnitId(instance);
         }
 
         public static Line getFamilyCL(this FamilyInstance instance)

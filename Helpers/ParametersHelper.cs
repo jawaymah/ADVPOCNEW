@@ -2,6 +2,8 @@
 using Autodesk.Revit.UI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +25,7 @@ namespace AdvansysPOC.Helpers
             catch (Exception ex)
             {
 
-                
+
             }
 
         }
@@ -74,38 +76,67 @@ namespace AdvansysPOC.Helpers
 
         public static void setupProject(Document doc)
         {
-
+            CreateProjectParameter(doc, Constants.LastUnitId);
         }
 
         public static void CreateProjectParameter(Document doc, string name)
         {
+            using (Transaction trans = new Transaction(doc))
+            {
+                // The name of the transaction was given as an argument
+                if (trans.Start("Create project parameter") != TransactionStatus.Started) return;
 
+                Category materials = doc.Settings.Categories.get_Item(BuiltInCategory.OST_ProjectInformation);
+                CategorySet cats1 = doc.Application.Create.NewCategorySet();
+                cats1.Insert(materials);
+
+                // parameter type => text ParameterType.Text
+                //BuiltInParameterGroup.PG_IDENTITY_DATA
+                using (SubTransaction subTR = new SubTransaction(doc))
+                {
+                    subTR.Start();
+                    RawCreateProjectParameter(doc.Application, name, SpecTypeId.Int.Integer, true,
+    cats1, true);
+                    subTR.Commit();
+                }
+
+                doc.Regenerate();
+                SetLastUnitId(1001);
+                trans.Commit();
+            }
         }
 
-        //public static void SetProjectInformationParameterInt(Document doc, BuiltInParameter parameter, int value)
-        //{
-        //    // Get the Project Information element
-        //    ElementId projectId = doc.ProjectInformation.Id;
-        //    Element projectInfoElement = doc.GetElement(projectId);
+        public static void RawCreateProjectParameter(Autodesk.Revit.ApplicationServices.Application app, string name,
+            ForgeTypeId type, bool visible, CategorySet cats, bool inst)
+        {
+            string oriFile = app.SharedParametersFilename;
+            string tempFile = Path.GetTempFileName() + ".txt";
+            using (File.Create(tempFile)) { }
+            app.SharedParametersFilename = tempFile;
 
-        //    // Check if the parameter exists and is writable
-        //    if (projectInfoElement.get_Parameter(parameter) != null && projectInfoElement.get_Parameter(parameter).IsReadOnly == false)
-        //    {
-        //        // Set the parameter value
-        //        Parameter param = projectInfoElement.get_Parameter(parameter);
-        //        param.Set(value);
-        //    }
-        //    else
-        //    {
-        //        TaskDialog.Show("Error", "Parameter " + parameter.ToString() + " not found or is read-only.");
-        //    }
-        //}
+            var defOptions = new ExternalDefinitionCreationOptions(name, type)
+            {
+                Visible = visible
+            };
+            ExternalDefinition def = app.OpenSharedParameterFile().Groups.Create("TemporaryDefintionGroup").
+                Definitions.Create(defOptions) as ExternalDefinition;
+
+            app.SharedParametersFilename = oriFile;
+            File.Delete(tempFile);
+
+            Autodesk.Revit.DB.Binding binding = app.Create.NewTypeBinding(cats);
+            if (inst) binding = app.Create.NewInstanceBinding(cats);
+
+            BindingMap map = (new UIApplication(app)).ActiveUIDocument.Document.ParameterBindings;
+            if (!map.Insert(def, binding, GroupTypeId.IdentityData))
+            {
+                Trace.WriteLine($"Failed to create Project parameter '{name}' :(");
+            }
+        }
 
         public static Parameter GetProjectUnitIdParameter(Document doc)
         {
-            ElementId projectId = doc.ProjectInformation.Id;
-            Element projectInfoElement = doc.GetElement(projectId);
-            Parameter param = projectInfoElement.LookupParameter(Constants.LastUnitId); // Refresh the parameter reference
+            Parameter param = doc.ProjectInformation.LookupParameter(Constants.LastUnitId);
             if (param != null && !param.IsReadOnly)
             {
                 return param;
@@ -118,19 +149,32 @@ namespace AdvansysPOC.Helpers
 
         public static int GetLastUnitId()
         {
-            return GetProjectUnitIdParameter(Globals.Doc).AsInteger();
+            return GetProjectUnitIdParameter(Globals.Doc).AsInteger() + 5;
         }
 
 
         public static void SetLastUnitId(int id)
         {
-            GetProjectUnitIdParameter(Globals.Doc).Set(id);
+            GetProjectUnitIdParameter(Globals.Doc)?.Set(id);
         }
 
         public static void SetLastUnitId()
         {
             var param = GetProjectUnitIdParameter(Globals.Doc);
-            param.Set(param.AsInteger()+1);
+            if (param != null)
+                param.Set(param.AsInteger());
+        }
+
+        public static void SetLastUnitId(FamilyInstance instance)
+        {
+            var param = GetProjectUnitIdParameter(Globals.Doc);
+            if (param != null)
+            {
+                param.Set(param.AsInteger() + 5);
+                SetParameter(instance, Constants.ConveyorNumber, param.AsValueString());
+                param.Set(param.AsInteger());
+            }
+
         }
     }
 }

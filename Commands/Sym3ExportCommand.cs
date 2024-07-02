@@ -22,7 +22,7 @@ namespace AdvansysPOC
             List<FamilyInstance> genericFamilies = new List<FamilyInstance>();
             //GetAllUnits
             List<DetailedUnit> units = DocumentHelper.getAllUnits();
-            Sym3Exporter.Run(units);
+            Sym3Exporter.RunTestFile();
             return Result.Succeeded;
         }
     }
