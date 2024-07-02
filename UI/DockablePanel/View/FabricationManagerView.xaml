@@ -311,7 +311,7 @@
 
                                                     <!--Command="{Binding ExtractSettingsFromAssemblyCommand}" />-->
 
-                    <Button Content="SPOOL"
+                    <Button Content="SPOOL" Click="Button_Click"
                                             Command="{Binding SpoolCommand}"
                                             BorderBrush="Orange"
                                             Height="20"

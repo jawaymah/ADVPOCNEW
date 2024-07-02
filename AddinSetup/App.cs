@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using AdvansysPOC.Events;
 using AdvansysPOC.Helpers;
 using AdvansysPOC.PROPERTIES;
 using Autodesk.Revit.ApplicationServices;
@@ -37,8 +38,17 @@ namespace AdvansysPOC
                 AddRibbonPanel(a, tabName, "Manager");
                 a.SelectionChanged += Elements_SelectionChanged;
                 CurrentApplication = a;
-                FabricationManagerView FabricationManagerView = new FabricationManagerView();
+
+                // A new handler to handle request posting by the dialog
+                DockablePanelEvent handler = new DockablePanelEvent();
+                // External Event for the dialog to use (to post requests)
+                ExternalEvent exEvent = ExternalEvent.Create(handler);
+
+
+                FabricationManagerView FabricationManagerView = new FabricationManagerView(handler, exEvent);
                 a.RegisterDockablePane(FabricationManagerPaneId, ManagerPanelName, FabricationManagerView);
+
+
 
                 //return Result.Succeeded;
             }
