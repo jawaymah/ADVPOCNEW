@@ -92,5 +92,10 @@ namespace AdvansysPOC
         {
             m_ExEvent.Raise();
         }
+
+        public void UpdateSelection(List<ElementId> ids)
+        {
+
+        }
     }
 }

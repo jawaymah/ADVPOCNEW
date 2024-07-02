@@ -24,7 +24,7 @@ namespace AdvansysPOC
 
         protected string ManagerPanelName => "Advnasys Manager";
         private static DockablePaneId FabricationManagerPaneId { get; } = new DockablePaneId(new Guid("DB7FB22A-A5E5-4344-8009-048CCFEE679A"));
-
+        FabricationManagerView FabricationManagerView;
         public Result OnStartup(UIControlledApplication a)
         {
             string tabName = "Advansys";
@@ -46,7 +46,7 @@ namespace AdvansysPOC
                 ExternalEvent exEvent = ExternalEvent.Create(handler);
 
 
-                FabricationManagerView FabricationManagerView = new FabricationManagerView(handler, exEvent);
+                FabricationManagerView = new FabricationManagerView(handler, exEvent);
                 a.RegisterDockablePane(FabricationManagerPaneId, ManagerPanelName, FabricationManagerView);
 
 
@@ -110,7 +110,7 @@ namespace AdvansysPOC
 
         private void Elements_SelectionChanged(object sender, Autodesk.Revit.UI.Events.SelectionChangedEventArgs e)
         {
-            var selected = e.GetSelectedElements();
+            var selected = e.GetSelectedElements().ToList();
             //foreach (var id in selected)
             //{
             //    Element elem = e.GetDocument().GetElement(id);
@@ -122,6 +122,7 @@ namespace AdvansysPOC
             //    }
             //}
             var doc = e.GetDocument();
+            FabricationManagerView.UpdateSelection(selected);
         }
 
 
