@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using AdvansysPOC.Commands;
 using AdvansysPOC.Commands.EventCommands;
 using AdvansysPOC.Events;
 using AdvansysPOC.Helpers;
@@ -179,6 +180,8 @@ namespace AdvansysPOC
             }
             if (panelName == "DetailedConveyors")
             {
+                var hpCalculationsButton = RevitUi.AddPushButtonData("HP Calculations", typeof(HPCalculationsCommand), Resources.excelIcon32, typeof(DocumentAvailablility));
+                Autodesk.Revit.UI.RibbonItem PulldownButtons3 = panel.AddItem(hpCalculationsButton);
                 //IList<Autodesk.Revit.UI.RibbonItem> stackedPulldownButtons = panel.AddStackedItems(pullButtonDataRegular, pullButtonBracingData, pullButtonSpecialData);
                 var pullButtonDetailed = RevitUi.AddPullDownButtonData("DetailedConveyors", "Detailed Conveyors");
                 Autodesk.Revit.UI.PulldownButton PulldownButtons = panel.AddItem(pullButtonDetailed) as PulldownButton;
@@ -198,6 +201,7 @@ namespace AdvansysPOC
                 PulldownButtons.AddSeparator();
                 PulldownButtons.AddPushButton(DriveData);
                 PulldownButtons.AddPushButton(SupportData);
+                
             }
             if (panelName == "Supports")
             {
