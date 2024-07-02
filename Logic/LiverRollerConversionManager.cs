@@ -5,6 +5,7 @@ using Autodesk.Revit.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -40,15 +41,44 @@ namespace AdvansysPOC.Logic
                 //Getting bed types to be placed...
                 FamilySymbol entryBed, exitBed, ctfBed, withBrakeBed, repetitiveBed;
 
+                using (Transaction tr = new Transaction(Globals.Doc))
+                {
+                    tr.Start("Create detailed Unit");
 
-                //Placing beds in order...
+                    //Placing beds in order...
+                    List<DetailedBed> bedsTobeInserted = GetBedsLogic(startPoint, endPoint);
+                    List<FamilyInstance> placedBeds = new List<FamilyInstance>();
+                    foreach (var bed in bedsTobeInserted)
+                    {
+                        placedBeds.Add(bed.PlaceBed());
+                    }
+                    
+                    //Grouping beds into an assembly...
 
+                    //Rotate if needed
 
-                //Grouping beds into an assembly...
+                    //Delete generic family
+                    Globals.Doc.Delete(instance.Id);
+
+                    tr.Commit();
+                }
 
 
             }
             return null;
+        }
+        public List<DetailedBed> GetBedsLogic(XYZ startpoint, XYZ endpoint)
+        {
+            // Rules and formulas
+            return new List<DetailedBed>();
+        }
+        public FamilyInstance PlaceEntrance(XYZ startPoint, XYZ vector, double length)
+        {
+            // XYZ vector = endpoint.substract(startpoint);
+
+            string error = "";
+            FamilySymbol symbol = FamilyHelper.getFamilySymbol(Constants.EntranceBedFamilyName, Constants.EntranceBedFileName, null, ref error);
+            return FamilyHelper.placePointFamilyWithSubTransaction(symbol, startPoint);
         }
 
         public FamilyInstance PlaceEntrance(XYZ startPoint, XYZ endPoint)

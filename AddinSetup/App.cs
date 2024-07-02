@@ -180,16 +180,16 @@ namespace AdvansysPOC
             if (panelName == "DetailedConveyors")
             {
                 //IList<Autodesk.Revit.UI.RibbonItem> stackedPulldownButtons = panel.AddStackedItems(pullButtonDataRegular, pullButtonBracingData, pullButtonSpecialData);
-                var pullButtonDetailed = RevitUi.AddPullDownButtonData("DetailedConveyors", "Detailed Conveyors");
+                var pullButtonDetailed = RevitUi.AddPullDownButtonData("DetailedConveyors", "Detailed Conveyors (CLR)");
                 Autodesk.Revit.UI.PulldownButton PulldownButtons = panel.AddItem(pullButtonDetailed) as PulldownButton;
 
                 //creat Detailed beds commands
-                var enterenceData = RevitUi.AddPushButtonData("Enterence Bed", typeof(CreateEnterenceBedCommand), Resources.add32, typeof(DocumentAvailablility));
-                var ExitData = RevitUi.AddPushButtonData("Exit Bed", typeof(CreateExitBedCommand), Resources.add32, typeof(DocumentAvailablility));
-                var IntermediateData = RevitUi.AddPushButtonData("Intermediate Bed", typeof(CreateIntermediateBedCommand), Resources.add32, typeof(DocumentAvailablility));
-                var CTFData = RevitUi.AddPushButtonData("CTF Bed", typeof(CreateCutToFitCommand), Resources.add32, typeof(DocumentAvailablility));
-                var DriveData = RevitUi.AddPushButtonData("Drive", typeof(CreateDriveCommand), Resources.add32, typeof(DocumentAvailablility));
-                var SupportData = RevitUi.AddPushButtonData("Support", typeof(CreateSupportCommand), Resources.add32, typeof(DocumentAvailablility));
+                var enterenceData = RevitUi.AddPushButtonData("C380_ENTRY", typeof(CreateEnterenceBedCommand), Resources.add32, typeof(DocumentAvailablility));
+                var ExitData = RevitUi.AddPushButtonData("C380_EXIT", typeof(CreateExitBedCommand), Resources.add32, typeof(DocumentAvailablility));
+                var IntermediateData = RevitUi.AddPushButtonData("C352", typeof(CreateIntermediateBedCommand), Resources.add32, typeof(DocumentAvailablility));
+                var CTFData = RevitUi.AddPushButtonData("C351", typeof(CreateCutToFitCommand), Resources.add32, typeof(DocumentAvailablility));
+                var DriveData = RevitUi.AddPushButtonData("C370", typeof(CreateDriveCommand), Resources.add32, typeof(DocumentAvailablility));
+                var SupportData = RevitUi.AddPushButtonData("C2101", typeof(CreateSupportCommand), Resources.add32, typeof(DocumentAvailablility));
 
                 PulldownButtons.AddPushButton(enterenceData);
                 PulldownButtons.AddPushButton(ExitData);
