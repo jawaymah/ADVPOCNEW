@@ -12,14 +12,17 @@ namespace AdvansysPOC.Logic
     {
         public DetailedBed() { }
 		//public DetailedBed NextBed { get; set; }
-  //      public DetailedBed PrevBed { get; set; }
+        //public DetailedBed PrevBed { get; set; }
         public XYZ StartPoint { get; set; }
-        public XYZ EndPoint { get; set; }
+        //public XYZ EndPoint { get; set; }
+        public double Length { get; set; }
         public BedType BedType { get; set; }
 
-        public double GetLength()
+        public XYZ GetEndPoint()
         {
-            return EndPoint.DistanceTo(StartPoint);
+            //to be implemented later...
+            return new XYZ();
+            //return EndPoint.DistanceTo(StartPoint);
         }
 
         public FamilyInstance PlaceBed()
@@ -33,23 +36,23 @@ namespace AdvansysPOC.Logic
             {
                 case BedType.None:
                     break;
-                case BedType.Spectial:
+                case BedType.Brake:
                     familyName = Constants.CTFFamilyName;
                     fileName = Constants.CTFFamilyFileName;
                     break;
-                case BedType.Intermediate:
+                case BedType.C351CTF:
                     familyName = Constants.CTFFamilyName;
                     fileName = Constants.CTFFamilyFileName;
                     break;
-                case BedType.TerminalStart:
+                case BedType.EntryBed:
                     familyName = Constants.CTFFamilyName;
                     fileName = Constants.CTFFamilyFileName;
                     break;
-                case BedType.TerminalEnd:
+                case BedType.ExitBed:
                     familyName = Constants.CTFFamilyName;
                     fileName = Constants.CTFFamilyFileName;
                     break;
-                case BedType.DriveBed:
+                case BedType.Drive:
                     familyName = Constants.CTFFamilyName;
                     fileName = Constants.CTFFamilyFileName;
                     break;

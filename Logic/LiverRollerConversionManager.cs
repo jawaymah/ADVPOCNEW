@@ -46,7 +46,7 @@ namespace AdvansysPOC.Logic
                     tr.Start("Create detailed Unit");
 
                     //Placing beds in order...
-                    List<DetailedBed> bedsTobeInserted = GetBedsLogic(startPoint, endPoint);
+                    List<DetailedBed> bedsTobeInserted = GetBedsLogic(startPoint, endPoint, 3);
                     List<FamilyInstance> placedBeds = new List<FamilyInstance>();
                     foreach (var bed in bedsTobeInserted)
                     {
@@ -67,11 +67,113 @@ namespace AdvansysPOC.Logic
             }
             return null;
         }
-        public List<DetailedBed> GetBedsLogic(XYZ startpoint, XYZ endpoint)
+
+
+        public List<DetailedBed> GetBedsLogic(XYZ startpoint, XYZ endpoint, int zoneLength)
         {
+            List<DetailedBed> outBeds = new List<DetailedBed>();
+
+            double entryExitLength = zoneLength + 0.5;
+
+            XYZ direction = (endpoint - startpoint).Normalize();
+
             // Rules and formulas
-            return new List<DetailedBed>();
+            int oal = (int)startpoint.DistanceTo(endpoint);
+
+            //Entry...
+            DetailedBed entryBed = new DetailedBed();
+            entryBed.BedType = BedType.EntryBed;
+            entryBed.StartPoint = startpoint;
+            entryBed.Length = entryExitLength;
+
+            //Exit...
+            DetailedBed exitBed = new DetailedBed();
+            exitBed.BedType = BedType.ExitBed;
+            exitBed.Length = entryExitLength;
+            exitBed.StartPoint = endpoint - entryExitLength * direction;
+
+            //Brake...
+            DetailedBed brakeBed = new DetailedBed();
+            brakeBed.Length = 12;
+            brakeBed.BedType = BedType.Brake;
+            brakeBed.StartPoint = exitBed.StartPoint - exitBed.Length * direction;
+
+            outBeds.Add(entryBed);
+            outBeds.Add(brakeBed);
+            outBeds.Add(exitBed);
+
+            int remainingLength = oal - (int) (entryBed.Length + exitBed.Length) - (int) brakeBed.Length;
+
+            if (remainingLength / 12 == 0)
+            {
+                //Add the drive to brake bed...
+
+                //Add CTF C351...
+                int ctfLen = remainingLength % 12;
+                DetailedBed ctf351 = new DetailedBed();
+                ctf351.Length = 12;
+                ctf351.BedType = BedType.C351CTF;
+                ctf351.StartPoint = entryBed.GetEndPoint();
+
+                outBeds.Add(ctf351);
+
+            }
+            else
+            {
+                int full352Count = remainingLength / 12;
+                XYZ lastPoint;
+                if (remainingLength % 12 == 1)
+                {
+                    //This is the case when we need CTF C352 with length 6 ft beside 7 ft C351...
+                    DetailedBed ctf351 = new DetailedBed();
+                    ctf351.Length = 7;
+                    ctf351.BedType = BedType.C351CTF;
+                    ctf351.StartPoint = entryBed.GetEndPoint();
+
+                    DetailedBed ctf352 = new DetailedBed();
+                    ctf352.Length = 6;
+                    ctf352.BedType = BedType.C352;
+                    ctf352.StartPoint = ctf351.GetEndPoint();
+
+                    outBeds.Add(ctf351);
+                    outBeds.Add(ctf352);
+
+                    lastPoint = ctf352.GetEndPoint();
+
+                    // Don't forget to deduct the full 352 by 1...
+                    full352Count--;
+                }
+                else
+                {
+                    int ctfLen = remainingLength % 12;
+                    DetailedBed ctf351 = new DetailedBed();
+                    ctf351.Length = 12;
+                    ctf351.BedType = BedType.C351CTF;
+                    ctf351.StartPoint = entryBed.GetEndPoint();
+
+                    outBeds.Add(ctf351);
+
+                    lastPoint = ctf351.GetEndPoint();
+                }
+
+                // Now adding the intermediate beds using a loop...
+                
+                for (int i = 0; i<full352Count; i++)
+                {
+                    DetailedBed ctf352 = new DetailedBed();
+                    ctf352.Length = 12;
+                    ctf352.BedType = BedType.C352;
+                    ctf352.StartPoint = lastPoint;
+
+                    outBeds.Add(ctf352);
+
+                    lastPoint = ctf352.GetEndPoint();
+                }
+            }
+            return outBeds;
         }
+
+
         public FamilyInstance PlaceEntrance(XYZ startPoint, XYZ vector, double length)
         {
             // XYZ vector = endpoint.substract(startpoint);

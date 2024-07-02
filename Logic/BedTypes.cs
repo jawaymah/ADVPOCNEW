@@ -9,10 +9,11 @@ namespace AdvansysPOC.Logic
     public enum BedType
     {
         None = 0,
-        Spectial = 1,
-        Intermediate = 2,
-        TerminalStart = 3,
-        TerminalEnd = 4,
-        DriveBed = 5
+        EntryBed = 1,
+        C351CTF = 2,
+        C352 = 3,
+        Drive = 4,
+        Brake = 5,
+        ExitBed = 6,
     }
 }
