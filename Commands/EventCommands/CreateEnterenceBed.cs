@@ -39,7 +39,7 @@ namespace AdvansysPOC.Commands.EventCommands
                 UIApplication uiApp = commandData.Application;
                 Document doc = commandData.Application.ActiveUIDocument.Document;
 
-                CreateCutToFitEventCommand.Execute(uiApp);
+                CreateEnterenceBedEventCommand.Execute(uiApp);
 
                 return Result.Succeeded;
             }

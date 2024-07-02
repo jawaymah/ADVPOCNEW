@@ -60,17 +60,20 @@ namespace AdvansysPOC.Helpers
 
         public static void SetupProjectIfNeeded(Document doc)
         {
-            ElementId projectId = doc.ProjectInformation.Id;
-            Element projectInfoElement = doc.GetElement(projectId);
-            Parameter param = projectInfoElement.LookupParameter(Constants.LastUnitId); // Refresh the parameter reference
-            if (param != null && !param.IsReadOnly)
+            if (!doc.IsFamilyDocument)
             {
-                //TODO anything on existing project
+                ElementId projectId = doc.ProjectInformation.Id;
+                Element projectInfoElement = doc.GetElement(projectId);
+                Parameter param = projectInfoElement.LookupParameter(Constants.LastUnitId); // Refresh the parameter reference
+                if (param != null && !param.IsReadOnly)
+                {
+                    //TODO anything on existing project
 
-            }
-            else
-            {
-                setupProject(doc);
+                }
+                else
+                {
+                    setupProject(doc);
+                }
             }
         }
 
