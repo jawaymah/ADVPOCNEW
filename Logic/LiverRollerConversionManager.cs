@@ -113,7 +113,7 @@ namespace AdvansysPOC.Logic
                 // Add CTF C351...
                 int ctfLen = remainingLength % 12;
                 DetailedBed ctf351 = new DetailedBed();
-                ctf351.Length = 12;
+                ctf351.Length = ctfLen;
                 ctf351.BedType = BedType.C351CTF;
                 ctf351.StartPoint = entryBed.GetEndPoint();
 
@@ -124,7 +124,7 @@ namespace AdvansysPOC.Logic
             {
                 int full352Count = remainingLength / 12;
                 XYZ lastPoint = new XYZ();
-                if (remainingLength % 12 == 1 && full352Count > 1)
+                if (remainingLength % 12 == 1 && full352Count > 0)
                 {
                     //This is the case when we need CTF C352 with length 6 ft beside 7 ft C351...
                     DetailedBed ctf351 = new DetailedBed();
