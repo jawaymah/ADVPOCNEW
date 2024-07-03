@@ -10,13 +10,17 @@ namespace AdvansysPOC.Logic
 {
     public class DetailedBed
     {
-        public DetailedBed() { }
+        public DetailedBed() 
+        {
+            this.HasDrive = false;    
+        }
 		//public DetailedBed NextBed { get; set; }
         //public DetailedBed PrevBed { get; set; }
         public XYZ StartPoint { get; set; }
         //public XYZ EndPoint { get; set; }
         public double Length { get; set; }
         public BedType BedType { get; set; }
+        public bool HasDrive { get; set; }
 
         public XYZ GetEndPoint()
         {

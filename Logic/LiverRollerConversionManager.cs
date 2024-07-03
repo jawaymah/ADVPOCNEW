@@ -102,13 +102,15 @@ namespace AdvansysPOC.Logic
             outBeds.Add(brakeBed);
             outBeds.Add(exitBed);
 
+            // Remaining length after deducting enter, exit, brake...
             int remainingLength = oal - (int) (entryBed.Length + exitBed.Length) - (int) brakeBed.Length;
 
             if (remainingLength / 12 == 0)
             {
-                //Add the drive to brake bed...
-
-                //Add CTF C351...
+                // Add the drive to brake bed...
+                brakeBed.HasDrive = true;
+                
+                // Add CTF C351...
                 int ctfLen = remainingLength % 12;
                 DetailedBed ctf351 = new DetailedBed();
                 ctf351.Length = 12;
@@ -118,11 +120,11 @@ namespace AdvansysPOC.Logic
                 outBeds.Add(ctf351);
 
             }
-            else
+            else // Here we have at least one full intermediate bed, unless the case of two CTFs...
             {
                 int full352Count = remainingLength / 12;
-                XYZ lastPoint;
-                if (remainingLength % 12 == 1)
+                XYZ lastPoint = new XYZ();
+                if (remainingLength % 12 == 1 && full352Count > 1)
                 {
                     //This is the case when we need CTF C352 with length 6 ft beside 7 ft C351...
                     DetailedBed ctf351 = new DetailedBed();
@@ -143,17 +145,24 @@ namespace AdvansysPOC.Logic
                     // Don't forget to deduct the full 352 by 1...
                     full352Count--;
                 }
-                else
+                else // Here we have at least one full bed and a ctf 351 normally...
                 {
                     int ctfLen = remainingLength % 12;
-                    DetailedBed ctf351 = new DetailedBed();
-                    ctf351.Length = 12;
-                    ctf351.BedType = BedType.C351CTF;
-                    ctf351.StartPoint = entryBed.GetEndPoint();
+                    if (ctfLen != 0)
+                    {
+                        DetailedBed ctf351 = new DetailedBed();
+                        ctf351.Length = ctfLen;
+                        ctf351.BedType = BedType.C351CTF;
+                        ctf351.StartPoint = entryBed.GetEndPoint();
 
-                    outBeds.Add(ctf351);
+                        outBeds.Add(ctf351);
 
-                    lastPoint = ctf351.GetEndPoint();
+                        lastPoint = ctf351.GetEndPoint();
+                    }
+                    else
+                    {
+                        lastPoint = entryBed.GetEndPoint();
+                    }
                 }
 
                 // Now adding the intermediate beds using a loop...
@@ -164,6 +173,7 @@ namespace AdvansysPOC.Logic
                     ctf352.Length = 12;
                     ctf352.BedType = BedType.C352;
                     ctf352.StartPoint = lastPoint;
+                    if (i == 0) ctf352.HasDrive = true;
 
                     outBeds.Add(ctf352);
 
