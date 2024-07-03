@@ -79,7 +79,7 @@ namespace AdvansysPOC.Logic
             XYZ direction = (endpoint - startpoint).Normalize();
 
             // Rules and formulas
-            int oal = (int)startpoint.DistanceTo(endpoint);
+            int oal = (int) startpoint.DistanceTo(endpoint);
 
             //Entry...
             DetailedBed entryBed = new DetailedBed();
@@ -120,6 +120,9 @@ namespace AdvansysPOC.Logic
                 ctf351.Length = ctfLen;
                 ctf351.BedType = BedType.C351CTF;
                 ctf351.StartPoint = entryBed.GetEndPoint();
+                ctf351.Direction = direction;
+
+                remainingLength -= (int)ctf351.Length;
 
                 outBeds.Add(ctf351);
 
@@ -135,11 +138,17 @@ namespace AdvansysPOC.Logic
                     ctf351.Length = 7;
                     ctf351.BedType = BedType.C351CTF;
                     ctf351.StartPoint = entryBed.GetEndPoint();
+                    ctf351.Direction = direction;
+
 
                     DetailedBed ctf352 = new DetailedBed();
                     ctf352.Length = 6;
                     ctf352.BedType = BedType.C352;
                     ctf352.StartPoint = ctf351.GetEndPoint();
+                    ctf352.Direction = direction;
+
+
+                    remainingLength -= 13;
 
                     outBeds.Add(ctf351);
                     outBeds.Add(ctf352);
@@ -158,6 +167,10 @@ namespace AdvansysPOC.Logic
                         ctf351.Length = ctfLen;
                         ctf351.BedType = BedType.C351CTF;
                         ctf351.StartPoint = entryBed.GetEndPoint();
+                        ctf351.Direction = direction;
+
+
+                        remainingLength -= (int)ctf351.Length;
 
                         outBeds.Add(ctf351);
 
@@ -171,12 +184,14 @@ namespace AdvansysPOC.Logic
 
                 // Now adding the intermediate beds using a loop...
                 
-                for (int i = 0; i<full352Count; i++)
+                for (int i = 0; i<full352Count && remainingLength > 0; i++)
                 {
                     DetailedBed ctf352 = new DetailedBed();
                     ctf352.Length = 12;
                     ctf352.BedType = BedType.C352;
                     ctf352.StartPoint = lastPoint;
+                    ctf352.Direction = direction;
+
                     if (i == 0) ctf352.HasDrive = true;
 
                     outBeds.Add(ctf352);
