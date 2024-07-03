@@ -10,13 +10,15 @@ using Microsoft.Office.Interop.Excel;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Drawing;
 using AdvansysPOC.UI;
+using System.IO;
 
 namespace AdvansysPOC.Logic
 {
     internal static class CalculationsManager
     {
         static HPCalculationsView _calculationsView;
-        const string filePath = @"D:\work\AdvansysRevit\HP CALC.xlsx";
+        const string filename = "HPCALC.xlsx";
+        static string filePath = new Uri(Path.Combine(UIConstants.FilsFolder, filename), UriKind.Absolute).AbsolutePath;
 
         #region Cells numbers
         const int DEFAULT_LIVE_LOAD_ROW = 7;

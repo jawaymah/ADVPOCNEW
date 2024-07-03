@@ -53,11 +53,11 @@ namespace AdvansysPOC.UI
             this.unit.Type = "Live Roller";
             this.unit.unitId  = "1001";
 
-            DetailedBedViewModel entry = new DetailedBedViewModel(new DetailedBed() { BedType = BedType.TerminalStart});
-            DetailedBedViewModel exit = new DetailedBedViewModel(new DetailedBed() { BedType = BedType.TerminalEnd});
-            DetailedBedViewModel intermediate = new DetailedBedViewModel(new DetailedBed() { BedType = BedType.Intermediate});
-            DetailedBedViewModel CTF = new DetailedBedViewModel(new DetailedBed() { BedType = BedType.Spectial});
-            DetailedBedViewModel Drive = new DetailedBedViewModel(new DetailedBed() { BedType = BedType.DriveBed});
+            DetailedBedViewModel entry = new DetailedBedViewModel(new DetailedBed() { BedType = BedType.EntryBed});
+            DetailedBedViewModel exit = new DetailedBedViewModel(new DetailedBed() { BedType = BedType.ExitBed});
+            DetailedBedViewModel intermediate = new DetailedBedViewModel(new DetailedBed() { BedType = BedType.C352});
+            DetailedBedViewModel CTF = new DetailedBedViewModel(new DetailedBed() { BedType = BedType.C351CTF});
+            DetailedBedViewModel Drive = new DetailedBedViewModel(new DetailedBed() { BedType = BedType.Drive});
             this.Beds = new ObservableCollection<DetailedBedViewModel>() { entry ,exit, intermediate, CTF, Drive };
         }
         public void AddBed(DetailedBedViewModel bed)

@@ -19,6 +19,13 @@ namespace AdvansysPOC
                 return AddinPath + "\\Families\\";
             }
         }
+        public static string FilsFolder
+        {
+            get
+            {
+                return AddinPath + "\\Files\\";
+            }
+        }
         public static string AssemblyPath
         {
             get

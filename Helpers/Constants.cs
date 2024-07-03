@@ -19,8 +19,8 @@ namespace AdvansysPOC
         public static string IntermediateFamilyFileName = "C352.rfa";
         public static string DriveFamilyName = "C370";
         public static string DriveFamilyFileName = "C370.rfa";
-        public static string SupportFamilyFileName = "C2101";
-        public static string SupportFamilyName = "C2101.rfa";
+        public static string SupportFamilyFileName = "C2101.rfa";
+        public static string SupportFamilyName = "C2101";
         public static string GuideRailFamilyFileName = "C2000";
         public static string GuideRailFamilyName = "C2000.rfa";
     }
