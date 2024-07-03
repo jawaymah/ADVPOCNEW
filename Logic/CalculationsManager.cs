@@ -9,11 +9,13 @@ using System.Data;
 using Microsoft.Office.Interop.Excel;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Drawing;
+using AdvansysPOC.UI;
 
 namespace AdvansysPOC.Logic
 {
     internal static class CalculationsManager
     {
+        static HPCalculationsView _calculationsView;
         const string filePath = @"D:\work\AdvansysRevit\HP CALC.xlsx";
 
         #region Cells numbers
@@ -74,13 +76,10 @@ namespace AdvansysPOC.Logic
             Excel.Workbook xlWorkBook = null;
             try
             {
-
                 xlApp = new Microsoft.Office.Interop.Excel.Application();
                 //xlApp.Visible = true;
                 xlWorkBook = xlApp.Workbooks.Open(filePath);
-                //xlWorkBook.Worksheets
-
-                //Excel.Workbook xlWorkBook = xlApp.Workbooks.Add(misValue);
+                
                 Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(2);
                 if (xlWorkSheet == null) return;
                 xlWorkSheet.Cells[DEFAULT_LIVE_LOAD_ROW, DEFAULT_LIVE_LOAD_COLUMN] = defaultLiveLoad;
@@ -96,9 +95,18 @@ namespace AdvansysPOC.Logic
 
                 xlWorkSheet.Calculate();
 
-                dynamic x = xlWorkSheet.Range["B10:T24"].CopyPicture(XlPictureAppearance.xlPrinter, XlCopyPictureFormat.xlPicture);
-                Image img = System.Windows.Forms.Clipboard.GetImage();
-
+                dynamic x = xlWorkSheet.Range["A9:T24"].CopyPicture(XlPictureAppearance.xlScreen, XlCopyPictureFormat.xlBitmap);
+                bool b = System.Windows.Clipboard.ContainsImage();
+                
+                Image image = System.Windows.Forms.Clipboard.GetImage();
+                if (_calculationsView != null && _calculationsView.IsVisible)
+                {
+                    _calculationsView.Hide();
+                    _calculationsView = null;
+                }
+                _calculationsView = new HPCalculationsView();
+                _calculationsView.AddImage(image);
+                _calculationsView.Show();
             }
             catch (Exception e)
             {
