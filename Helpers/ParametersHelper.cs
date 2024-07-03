@@ -150,10 +150,10 @@ namespace AdvansysPOC.Helpers
             }
         }
 
-        public static int GetLastUnitId()
-        {
-            return GetProjectUnitIdParameter(Globals.Doc).AsInteger() + 5;
-        }
+        //public static int GetLastUnitId()
+        //{
+        //    return GetProjectUnitIdParameter(Globals.Doc).AsInteger() + 5;
+        //}
 
 
         public static void SetLastUnitId(int id)
@@ -173,9 +173,9 @@ namespace AdvansysPOC.Helpers
             var param = GetProjectUnitIdParameter(Globals.Doc);
             if (param != null)
             {
-                param.Set(param.AsInteger() + 5);
-                SetParameter(instance, Constants.ConveyorNumber, param.AsValueString());
                 param.Set(param.AsInteger());
+                SetParameter(instance, Constants.ConveyorNumber, param.AsValueString());
+                param.Set(param.AsInteger() + 5);
             }
 
         }

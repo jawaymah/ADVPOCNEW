@@ -28,7 +28,7 @@ namespace AdvansysPOC
                 UIApplication uiApp = commandData.Application;
                 Document doc = commandData.Application.ActiveUIDocument.Document;
 
-                if (symbol == null)
+                if (symbol == null || true)
                 {
                     Family family = FamilyHelper.FindFamilyByName(doc, basicFamilyName);
                     if (family == null)

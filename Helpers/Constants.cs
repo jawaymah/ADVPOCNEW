@@ -7,7 +7,7 @@ namespace AdvansysPOC
     {
         public static string ConveyorNumber = "Conveyor_Number";
         public static string ConveyorHand = "Conveyor_Hand";
-        public static string LastUnitId = "LastUnitId";
+        public static string LastUnitId = "NextUnitId";
 
         public static string EntranceBedFamilyName = "C380_ENTRY";
         public static string EntranceBedFileName = "C380_ENTRY.rfa";
