@@ -4,6 +4,10 @@ using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using System.Collections.Generic;
+using System.Linq;
+using System.Transactions;
+using System.Windows.Controls;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace AdvansysPOC
 {
@@ -37,19 +41,47 @@ namespace AdvansysPOC
             }
             LiverRollerConversionManager managner = new LiverRollerConversionManager();
 
-            using (Transaction tr = new Transaction(Doc))
+            using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
             {
                 tr.Start("Converting to Detail");
                 foreach (var family in genericFamilies)
                 {
-                    var detailed = managner.ConvertToDetailed(family);
+                    List<FamilyInstance> detailed = managner.ConvertToDetailed(family);
+                    //addElementsToaSSEMBLY(detailed.Select(s => s.Id).ToList());
                 }
-
+                
 
                 tr.Commit();
             }
 
             return Result.Succeeded;
+        }
+
+        public void addElementsToaSSEMBLY(List<ElementId> elementIds)
+        {
+            // Create the assembly instance
+            AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, elementIds, getSpoolNamingCategory());
+
+            if (assemblyInstance != null)
+            {
+                // Optionally, you can set properties of the assembly instance
+                assemblyInstance.AssemblyTypeName = "Custom Assembly Type"; // Example of setting assembly type
+            }
+        }
+
+        public static ElementId getSpoolNamingCategory()
+        {
+            ElementId pID = ElementId.InvalidElementId;
+            //var lSpools = new FilteredElementCollector(Globals.Doc).OfClass(typeof(AssemblyInstance)).OfType<AssemblyInstance>().ToList();
+            //foreach (var pSpool in lSpools)
+            //{
+            //    if (pSpool.NamingCategoryId != ElementId.InvalidElementId)
+            //    {
+            //        pID = pSpool.NamingCategoryId;
+            //        break;
+            //    }
+            //}
+            return pID;
         }
     }
 }

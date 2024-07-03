@@ -109,6 +109,40 @@ namespace AdvansysPOC.Helpers
             return symbol;
         }
 
+        public static FamilySymbol getFamilySymbolwithoutTransaction(string basicFamilyName, string basicFamilyNameWithExtension, FamilySymbol symbol, ref string message)
+        {
+            if (symbol == null)
+            {
+                Family family = FamilyHelper.FindFamilyByName(Globals.Doc, basicFamilyName);
+                if (family == null)
+                {
+                    // Absolute path to the family file
+                    string familyPath = new Uri(Path.Combine(UIConstants.ButtonFamiliesFolder, basicFamilyNameWithExtension), UriKind.Absolute).AbsolutePath;
+
+                    if (!Globals.Doc.LoadFamily(familyPath, out family))
+                    {
+                        message = "Could not load family.";
+                    }
+                }
+                // Assume the family has a family symbol (family type)
+                FamilySymbol familySymbol = null;
+                foreach (ElementId id in family.GetFamilySymbolIds())
+                {
+                    familySymbol = Globals.Doc.GetElement(id) as FamilySymbol;
+                    break; // For simplicity, using the first available symbol
+                }
+
+                if (familySymbol == null)
+                {
+                    message = "No family symbols found in the family.";
+                }
+
+                symbol = familySymbol;
+            }
+            return symbol;
+        }
+
+
         public static FamilyInstance placePointFamilyWithSubTransaction(FamilySymbol symbol, XYZ location)
         {
             if (symbol == null) return null;

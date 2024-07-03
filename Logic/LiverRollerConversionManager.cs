@@ -18,32 +18,33 @@ namespace AdvansysPOC.Logic
 
         public new List<FamilyInstance> ConvertToDetailed(FamilyInstance instance)
         {
-            // Get parameter values
-            Parameter lengthParam = instance.LookupParameter("Conveyor Length");
-            Parameter widthParam = instance.LookupParameter("Conveyor Width");
-            Parameter zoneLengthParam = instance.LookupParameter("Zone Length");
-            Parameter typeParam = instance.LookupParameter("Conveyor Type");
+            //// Get parameter values
+            //Parameter lengthParam = instance.LookupParameter("Conveyor Length");
+            //Parameter widthParam = instance.LookupParameter("Conveyor Width");
+            //Parameter zoneLengthParam = instance.LookupParameter("Zone Length");
+            //Parameter typeParam = instance.LookupParameter("Conveyor Type");
 
-            if (lengthParam != null && typeParam != null)
-            {
-                // Read all needed parameters values
-                double conveyorLength = lengthParam.AsDouble();
-                double conveyorWidth = widthParam.AsDouble();
-                double zoneLength = zoneLengthParam.AsDouble();
-                string conveyorType = typeParam.AsValueString();
+            //if (lengthParam != null && typeParam != null)
+            //{
+            //    // Read all needed parameters values
+            //    double conveyorLength = lengthParam.AsDouble();
+            //    double conveyorWidth = widthParam.AsDouble();
+            //    double zoneLength = zoneLengthParam.AsDouble();
+            //    string conveyorType = typeParam.AsValueString();
 
                 // Get geometry information
                 XYZ startPoint, endPoint;
-                Line cl = instance.getFamilyCL();
+                Line cl = (instance.Location as LocationCurve).Curve as Line;
+                //Line cl = instance.getFamilyCL();
                 startPoint = cl.GetEndPoint(0);
                 endPoint = cl.GetEndPoint(1);
 
                 //Getting bed types to be placed...
                 FamilySymbol entryBed, exitBed, ctfBed, withBrakeBed, repetitiveBed;
 
-                using (Transaction tr = new Transaction(Globals.Doc))
-                {
-                    tr.Start("Create detailed Unit");
+                //using (Transaction tr = new Transaction(Globals.Doc))
+                //{
+                    //tr.Start("Create detailed Unit");
 
                     //Placing beds in order...
                     List<DetailedBed> bedsTobeInserted = GetBedsLogic(startPoint, endPoint, 3);
@@ -60,11 +61,11 @@ namespace AdvansysPOC.Logic
                     //Delete generic family
                     Globals.Doc.Delete(instance.Id);
 
-                    tr.Commit();
-                }
+                    //tr.Commit();
+                //}
 
 
-            }
+            //}
             return null;
         }
 
@@ -85,18 +86,21 @@ namespace AdvansysPOC.Logic
             entryBed.BedType = BedType.EntryBed;
             entryBed.StartPoint = startpoint;
             entryBed.Length = entryExitLength;
+            entryBed.Direction = direction;
 
             //Exit...
             DetailedBed exitBed = new DetailedBed();
             exitBed.BedType = BedType.ExitBed;
             exitBed.Length = entryExitLength;
             exitBed.StartPoint = endpoint - entryExitLength * direction;
+            exitBed.Direction = direction;
 
             //Brake...
             DetailedBed brakeBed = new DetailedBed();
             brakeBed.Length = 12;
             brakeBed.BedType = BedType.Brake;
             brakeBed.StartPoint = exitBed.StartPoint - exitBed.Length * direction;
+            brakeBed.Direction = direction;
 
             outBeds.Add(entryBed);
             outBeds.Add(brakeBed);

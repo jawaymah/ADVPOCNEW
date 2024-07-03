@@ -17,6 +17,7 @@ namespace AdvansysPOC.Logic
 		//public DetailedBed NextBed { get; set; }
         //public DetailedBed PrevBed { get; set; }
         public XYZ StartPoint { get; set; }
+        public XYZ Direction { get; set; }
         //public XYZ EndPoint { get; set; }
         public double Length { get; set; }
         public BedType BedType { get; set; }
@@ -24,8 +25,8 @@ namespace AdvansysPOC.Logic
 
         public XYZ GetEndPoint()
         {
+            return StartPoint + Direction * Length;
             //to be implemented later...
-            return new XYZ();
             //return EndPoint.DistanceTo(StartPoint);
         }
 
@@ -41,29 +42,29 @@ namespace AdvansysPOC.Logic
                 case BedType.None:
                     break;
                 case BedType.Brake:
-                    familyName = Constants.CTFFamilyName;
-                    fileName = Constants.CTFFamilyFileName;
+                    familyName = Constants.IntermediateFamilyName;
+                    fileName = Constants.IntermediateFamilyFileName;
                     break;
                 case BedType.C351CTF:
                     familyName = Constants.CTFFamilyName;
                     fileName = Constants.CTFFamilyFileName;
                     break;
                 case BedType.EntryBed:
-                    familyName = Constants.CTFFamilyName;
-                    fileName = Constants.CTFFamilyFileName;
+                    familyName = Constants.EntranceBedFamilyName;
+                    fileName = Constants.EntranceBedFileName;
                     break;
                 case BedType.ExitBed:
-                    familyName = Constants.CTFFamilyName;
-                    fileName = Constants.CTFFamilyFileName;
+                    familyName = Constants.ExitBedFamilyName;
+                    fileName = Constants.ExitBedFileName;
                     break;
                 case BedType.Drive:
-                    familyName = Constants.CTFFamilyName;
-                    fileName = Constants.CTFFamilyFileName;
+                    familyName = Constants.DriveFamilyName;
+                    fileName = Constants.DriveFamilyFileName;
                     break;
                 default:
                     break;
             }
-            FamilySymbol symbol = FamilyHelper.getFamilySymbol(familyName, fileName, null, ref error);
+            FamilySymbol symbol = FamilyHelper.getFamilySymbolwithoutTransaction(familyName, fileName, null, ref error);
             return FamilyHelper.placePointFamilyWithSubTransaction(symbol, StartPoint);
         }
     }
