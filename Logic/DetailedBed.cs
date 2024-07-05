@@ -42,12 +42,16 @@ namespace AdvansysPOC.Logic
                 case BedType.None:
                     break;
                 case BedType.Brake:
-                    familyName = Constants.IntermediateFamilyName;
-                    fileName = Constants.IntermediateFamilyFileName;
+                    familyName = Constants.BrakeBedFamilyName;
+                    fileName = Constants.BrakeBedFileName;
                     break;
                 case BedType.C351CTF:
                     familyName = Constants.CTFFamilyName;
                     fileName = Constants.CTFFamilyFileName;
+                    break;
+                case BedType.C352:
+                    familyName = Constants.IntermediateFamilyName;
+                    fileName = Constants.IntermediateFamilyFileName;
                     break;
                 case BedType.EntryBed:
                     familyName = Constants.EntranceBedFamilyName;
@@ -65,7 +69,7 @@ namespace AdvansysPOC.Logic
                     break;
             }
             FamilySymbol symbol = FamilyHelper.getFamilySymbolwithoutTransaction(familyName, fileName, null, ref error);
-            return FamilyHelper.placePointFamilyWithSubTransaction(symbol, StartPoint);
+            return FamilyHelper.placePointFamilyWithSubTransaction(symbol, StartPoint, Length);
         }
     }
 }

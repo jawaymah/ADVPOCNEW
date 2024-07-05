@@ -143,7 +143,7 @@ namespace AdvansysPOC.Helpers
         }
 
 
-        public static FamilyInstance placePointFamilyWithSubTransaction(FamilySymbol symbol, XYZ location)
+        public static FamilyInstance placePointFamilyWithSubTransaction(FamilySymbol symbol, XYZ location, double length)
         {
             if (symbol == null) return null;
 
@@ -157,6 +157,26 @@ namespace AdvansysPOC.Helpers
 
                 // Create a new instance of the family symbol at the specified location
                 instance = Globals.Doc.Create.NewFamilyInstance(location, symbol, StructuralType.NonStructural);
+
+                // Setting the length of the placed bed...
+
+                if (symbol.FamilyName.Contains("380"))
+                {
+                    Parameter zoneLengthParameter = instance.LookupParameter("CLR_ZONES");
+                    if (zoneLengthParameter != null && zoneLengthParameter.StorageType == StorageType.Double)
+                    {
+                        zoneLengthParameter.Set(length-0.5);
+                    }
+                }
+                else if (symbol.FamilyName.Contains("351") || symbol.FamilyName.Contains("352"))
+                {
+                    Parameter lengthParameter = instance.LookupParameter("Bed_Length");
+                    if (lengthParameter != null && lengthParameter.StorageType == StorageType.Double)
+                    {
+                        lengthParameter.Set(length);
+                    }
+                }
+
 
                 t.Commit();
             }
