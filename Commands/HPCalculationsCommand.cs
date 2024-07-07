@@ -17,7 +17,8 @@ namespace AdvansysPOC.Commands
         {
             var UiDoc = commandData.Application.ActiveUIDocument;
             var Doc = UiDoc.Document;
-            CalculationsManager.DoLiveRollerCalculations(25, 150, 200, 0, 2, 0, "N", 0);
+            CalculationsManager.DisplayLiveRollerCalculation(150, 2);
+            CalculationsManager.GetLiveRollerCalculationResult(150, 2);
             //var selection = UiDoc.Selection;
             //if (selection == null) return Result.Cancelled;
 
