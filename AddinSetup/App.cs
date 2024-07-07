@@ -172,11 +172,10 @@ namespace AdvansysPOC
                 var buttonDataDimensions = RevitUi.AddPushButtonData("Create\n Generic Unit", typeof(GenericStraightConveyorCommand), Resources.add32, typeof(DocumentAvailablility));
                 var buttonFlip = RevitUi.AddPushButtonData("Flip\n Generic Hand", typeof(FlipGenericHandCommand), Resources.element_move32, typeof(DocumentAvailablility));
                 var buttonConvert = RevitUi.AddPushButtonData("Convert To Detail", typeof(ConvertToDetailCommand), Resources.convertToDetail, typeof(DocumentAvailablility));
-                var sym3Convert = RevitUi.AddPushButtonData("Export To Sym3", typeof(Sym3ExportCommand), Resources.excelIcon32, typeof(DocumentAvailablility));
+
                 Autodesk.Revit.UI.RibbonItem PulldownButtons3 = panel.AddItem(buttonDataDimensions);
                 Autodesk.Revit.UI.RibbonItem flipButton = panel.AddItem(buttonFlip);
                 Autodesk.Revit.UI.RibbonItem convertButton = panel.AddItem(buttonConvert);
-                Autodesk.Revit.UI.RibbonItem sym3Button = panel.AddItem(sym3Convert);
             }
             if (panelName == "DetailedConveyors")
             {
@@ -201,7 +200,10 @@ namespace AdvansysPOC
                 PulldownButtons.AddSeparator();
                 PulldownButtons.AddPushButton(DriveData);
                 PulldownButtons.AddPushButton(SupportData);
-                
+
+                var sym3Convert = RevitUi.AddPushButtonData("Export To Sym3", typeof(Sym3ExportCommand), Resources.excelIcon32, typeof(DocumentAvailablility));
+                Autodesk.Revit.UI.RibbonItem sym3Button = panel.AddItem(sym3Convert);
+
             }
             if (panelName == "Supports")
             {
