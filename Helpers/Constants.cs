@@ -5,9 +5,11 @@ namespace AdvansysPOC
 {
     public static class Constants
     {
+        //Parameters
         public static string ConveyorNumber = "Conveyor_Number";
         public static string ConveyorHand = "Conveyor_Hand";
         public static string LastUnitId = "NextUnitId";
+        public static string Conveyor_Elevation_In = "Conveyor_Elevation_In";
 
         public static string EntranceBedFamilyName = "C380_ENTRY";
         public static string EntranceBedFileName = "C380_ENTRY.rfa";
@@ -25,5 +27,7 @@ namespace AdvansysPOC
         public static string SupportFamilyName = "C2101";
         public static string GuideRailFamilyFileName = "C2000";
         public static string GuideRailFamilyName = "C2000.rfa";
+
+        
     }
 }

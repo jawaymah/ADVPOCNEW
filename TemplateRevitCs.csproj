@@ -26,7 +26,8 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EPPlus">
-      <HintPath>..\..\..\Downloads\EPPlus.dll</HintPath>
+      <HintPath>..\dna_app\DNAView\bin\Debug2023\EPPlus.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="RevitAPI">
       <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2025\RevitAPI.dll</HintPath>

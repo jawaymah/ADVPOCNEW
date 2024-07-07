@@ -20,7 +20,12 @@ namespace AdvansysPOC.Logic
         public new List<FamilyInstance> ConvertToDetailed(FamilyInstance instance)
         {
             //// Get parameter values
-            //Parameter lengthParam = instance.LookupParameter("Conveyor Length");
+            bool isLeftHand = false;
+            Parameter ConveyorHand = instance.LookupParameter(Constants.ConveyorHand);
+            if (ConveyorHand != null)
+            {
+                isLeftHand = ConveyorHand.AsString().ToLower() == "left";
+            }
             //Parameter widthParam = instance.LookupParameter("Conveyor Width");
             //Parameter zoneLengthParam = instance.LookupParameter("Zone Length");
             //Parameter typeParam = instance.LookupParameter("Conveyor Type");
@@ -33,40 +38,42 @@ namespace AdvansysPOC.Logic
             //    double zoneLength = zoneLengthParam.AsDouble();
             //    string conveyorType = typeParam.AsValueString();
 
-                // Get geometry information
-                XYZ startPoint, endPoint;
-                Line cl = (instance.Location as LocationCurve).Curve as Line;
-                //Line cl = instance.getFamilyCL();
-                startPoint = cl.GetEndPoint(0);
-                endPoint = cl.GetEndPoint(1);
+            // Get geometry information
+            XYZ startPoint, endPoint;
+            Line cl = (instance.Location as LocationCurve).Curve as Line;
+            //Line cl = instance.getFamilyCL();
+            startPoint = cl.GetEndPoint(0);
+            endPoint = cl.GetEndPoint(1);
 
-                //Getting bed types to be placed...
-                FamilySymbol entryBed, exitBed, ctfBed, withBrakeBed, repetitiveBed;
+            //Getting bed types to be placed...
+            FamilySymbol entryBed, exitBed, ctfBed, withBrakeBed, repetitiveBed;
 
-                //using (Transaction tr = new Transaction(Globals.Doc))
-                //{
-                    //tr.Start("Create detailed Unit");
-
-                //Placing beds in order...
-                List<DetailedBed> bedsTobeInserted = GetBedsLogic(startPoint, endPoint, 3);
-                List<FamilyInstance> placedBeds = new List<FamilyInstance>();
-                foreach (var bed in bedsTobeInserted)
+            //Placing beds in order...
+            List<DetailedBed> bedsTobeInserted = GetBedsLogic(startPoint, endPoint, 3);
+            List<FamilyInstance> placedBeds = new List<FamilyInstance>();
+            foreach (var bed in bedsTobeInserted)
+            {
+                FamilyInstance inst = bed.PlaceBed();
+                placedBeds.Add(inst);
+                if (bed.HasDrive)
                 {
-                        placedBeds.Add(bed.PlaceBed());
-                    }
-                    
-                    //Grouping beds into an assembly...
+                    placedBeds.Add(bed.PlaceDrive(isLeftHand));
+                }
+                placedBeds.AddRange(bed.PlaceSupports(inst));
+            }
 
-                    //Rotate if needed
+            //Grouping beds into an assembly...
+            if (placedBeds.Count > 0)
+            {
+                ElementId categoryId = placedBeds[0].Category.Id;
+                AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, placedBeds.Select(s => s.Id).ToList(), categoryId);
+            }
 
-                    //Delete generic family
-                    Globals.Doc.Delete(instance.Id);
+            //Rotate if needed
 
-                    //tr.Commit();
-                //}
+            //Delete generic family
+            Globals.Doc.Delete(instance.Id);
 
-
-            //}
             return null;
         }
 

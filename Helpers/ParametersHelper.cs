@@ -29,7 +29,12 @@ namespace AdvansysPOC.Helpers
             }
 
         }
-
+        public static void SetTypeParameter(this FamilyInstance instance, string parameter, double value)
+        {
+            Parameter p = instance.Symbol.LookupParameter(parameter);
+            if (p != null)
+                p.Set(value);
+        }
         public static void SetParameter(this FamilyInstance instance, string parameter, double value)
         {
             Parameter p = instance.LookupParameter(parameter);

@@ -182,5 +182,47 @@ namespace AdvansysPOC.Helpers
             }
             return instance;
         }
+
+        public static void RotateFamilyToDirection(this FamilyInstance fi, Document doc, XYZ newOrientation, XYZ origin, bool flip=false)
+        {
+            ElementId elId = fi.Id; 
+            XYZ location = (fi.Location as LocationPoint).Point;
+            XYZ currentOrientation = XYZ.BasisX;// fi.FacingOrientation;
+            XYZ perpendicularRay = null;
+            if (currentOrientation.IsAlmostEqualTo(newOrientation)) {
+                if (flip)
+                {
+                    doc.Regenerate();
+                    if (flip && fi.CanFlipFacing)
+                        fi.flipFacing();
+                }
+
+                return; 
+            }
+            if (currentOrientation.IsAlmostEqualTo(newOrientation * -1))
+            {
+                perpendicularRay = XYZ.BasisZ;
+            }
+            else
+            {
+                perpendicularRay = currentOrientation.CrossProduct(newOrientation).Normalize();
+            }
+            Line line = Line.CreateBound(location, location + perpendicularRay);
+            double angle = currentOrientation.AngleTo(newOrientation);
+
+            try
+            {
+                ElementTransformUtils.RotateElement(doc, elId, line, angle);
+                XYZ locationnew = (fi.Location as LocationPoint).Point;
+                //(fi.Location as LocationPoint).Point = locationnew;
+                ElementTransformUtils.MoveElement(doc, elId, origin.Subtract(locationnew));
+                if(flip && fi.CanFlipHand)
+                    fi.flipHand();
+            }
+            catch { //TaskDialog.Show("ERROR", "Failed trying to Rotate FamilyInstance");
+            }
+
+            return;
+        }
     }
 }
