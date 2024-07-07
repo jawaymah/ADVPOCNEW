@@ -18,25 +18,20 @@ namespace AdvansysPOC.Logic
     {
 
         public new List<FamilyInstance> ConvertToDetailed(FamilyInstance instance)
-        {
-            //// Get parameter values
-            bool isLeftHand = false;
-            Parameter ConveyorHand = instance.LookupParameter(Constants.ConveyorHand);
-            if (ConveyorHand != null)
-            {
-                isLeftHand = ConveyorHand.AsString().ToLower() == "left";
-            }
-            //Parameter widthParam = instance.LookupParameter("Conveyor Width");
-            //Parameter zoneLengthParam = instance.LookupParameter("Zone Length");
-            //Parameter typeParam = instance.LookupParameter("Conveyor Type");
+    {
+        //// Get parameter values
+        //Parameter lengthParam = instance.LookupParameter("Conveyor Length");
+        //Parameter widthParam = instance.LookupParameter("Conveyor Width");
+        //Parameter zoneLengthParam = instance.LookupParameter("Zone Length");
+        //Parameter typeParam = instance.LookupParameter("Conveyor Type");
 
-            //if (lengthParam != null && typeParam != null)
-            //{
-            //    // Read all needed parameters values
-            //    double conveyorLength = lengthParam.AsDouble();
-            //    double conveyorWidth = widthParam.AsDouble();
-            //    double zoneLength = zoneLengthParam.AsDouble();
-            //    string conveyorType = typeParam.AsValueString();
+        //if (lengthParam != null && typeParam != null)
+        //{
+        //    // Read all needed parameters values
+        //    double conveyorLength = lengthParam.AsDouble();
+        //    double conveyorWidth = widthParam.AsDouble();
+        //    double zoneLength = zoneLengthParam.AsDouble();
+        //    string conveyorType = typeParam.AsValueString();
 
             // Get geometry information
             XYZ startPoint, endPoint;
@@ -45,37 +40,46 @@ namespace AdvansysPOC.Logic
             startPoint = cl.GetEndPoint(0);
             endPoint = cl.GetEndPoint(1);
 
+            int convWidth =(int) (12 * instance.Symbol.LookupParameter("Conveyor_OAW").AsDouble());
+
+            bool driveInserted = false;
+
             //Getting bed types to be placed...
             FamilySymbol entryBed, exitBed, ctfBed, withBrakeBed, repetitiveBed;
 
-            //Placing beds in order...
-            List<DetailedBed> bedsTobeInserted = GetBedsLogic(startPoint, endPoint, 3);
+            //using (Transaction tr = new Transaction(Globals.Doc))
+            //{
+            //tr.Start("Create detailed Unit");
+
+
+            // Get zone length from generic conveyor...
+
+            Parameter zoneLength = instance.LookupParameter("Zone_Length");
+
+            double zl = zoneLength.AsDouble();
+
+            // Placing beds in order...
+            List<DetailedBed> bedsTobeInserted = GetBedsLogic(startPoint, endPoint, (int)zl);
             List<FamilyInstance> placedBeds = new List<FamilyInstance>();
             foreach (var bed in bedsTobeInserted)
             {
-                FamilyInstance inst = bed.PlaceBed();
-                placedBeds.Add(inst);
-                if (bed.HasDrive)
-                {
-                    placedBeds.Add(bed.PlaceDrive(isLeftHand));
+                    placedBeds.Add(bed.PlaceBed(convWidth));
                 }
-                placedBeds.AddRange(bed.PlaceSupports(inst));
-            }
+                    
+                //Grouping beds into an assembly...
 
-            //Grouping beds into an assembly...
-            if (placedBeds.Count > 0)
-            {
-                ElementId categoryId = placedBeds[0].Category.Id;
-                AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, placedBeds.Select(s => s.Id).ToList(), categoryId);
-            }
+                //Rotate if needed
 
-            //Rotate if needed
+                //Delete generic family
+                Globals.Doc.Delete(instance.Id);
 
-            //Delete generic family
-            Globals.Doc.Delete(instance.Id);
+                //tr.Commit();
+            //}
 
-            return null;
-        }
+
+        //}
+        return null;
+    }
 
 
         public List<DetailedBed> GetBedsLogic(XYZ startpoint, XYZ endpoint, int zoneLength)
@@ -86,8 +90,8 @@ namespace AdvansysPOC.Logic
 
             XYZ direction = (endpoint - startpoint).Normalize();
 
-            // Rules and formulas
-            int oal = (int)Math.Round(startpoint.DistanceTo(endpoint));
+                // Rules and formulas
+            double oal = Math.Round(startpoint.DistanceTo(endpoint), 4);
 
             //Entry...
             DetailedBed entryBed = new DetailedBed();
@@ -115,7 +119,7 @@ namespace AdvansysPOC.Logic
             outBeds.Add(exitBed);
 
             // Remaining length after deducting enter, exit, brake...
-            int remainingLength = oal - (int) (entryBed.Length + exitBed.Length) - (int) brakeBed.Length;
+            double remainingLength = oal - entryBed.Length - exitBed.Length - brakeBed.Length;
 
             if (remainingLength / 12 == 0)
             {
@@ -123,27 +127,27 @@ namespace AdvansysPOC.Logic
                 brakeBed.HasDrive = true;
                 
                 // Add CTF C351...
-                int ctfLen = remainingLength % 12;
+                double ctfLen = remainingLength % 12;
                 DetailedBed ctf351 = new DetailedBed();
                 ctf351.Length = ctfLen;
                 ctf351.BedType = BedType.C351CTF;
                 ctf351.StartPoint = entryBed.GetEndPoint();
                 ctf351.Direction = direction;
 
-                remainingLength -= (int)ctf351.Length;
+                remainingLength -= ctf351.Length;
 
                 outBeds.Add(ctf351);
 
             }
             else // Here we have at least one full intermediate bed, unless the case of two CTFs...
             {
-                int full352Count = remainingLength / 12;
+                int full352Count = (int) remainingLength / 12;
                 XYZ lastPoint = new XYZ();
-                if (remainingLength % 12 == 1 && full352Count > 0)
+                if ((int)remainingLength % 12 == 1 && full352Count > 0)
                 {
                     //This is the case when we need CTF C352 with length 6 ft beside 7 ft C351...
                     DetailedBed ctf351 = new DetailedBed();
-                    ctf351.Length = 7;
+                    ctf351.Length = remainingLength - 6;
                     ctf351.BedType = BedType.C351CTF;
                     ctf351.StartPoint = entryBed.GetEndPoint();
                     ctf351.Direction = direction;
@@ -168,7 +172,7 @@ namespace AdvansysPOC.Logic
                 }
                 else // Here we have at least one full bed and a ctf 351 normally...
                 {
-                    int ctfLen = remainingLength % 12;
+                    double ctfLen = remainingLength % 12;
                     if (ctfLen != 0)
                     {
                         DetailedBed ctf351 = new DetailedBed();
@@ -178,7 +182,7 @@ namespace AdvansysPOC.Logic
                         ctf351.Direction = direction;
 
 
-                        remainingLength -= (int)ctf351.Length;
+                        remainingLength -= ctf351.Length;
 
                         outBeds.Add(ctf351);
 
