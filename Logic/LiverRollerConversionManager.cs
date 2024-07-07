@@ -2,6 +2,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using Autodesk.Revit.UI;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,11 +47,11 @@ namespace AdvansysPOC.Logic
                 //{
                     //tr.Start("Create detailed Unit");
 
-                    //Placing beds in order...
-                    List<DetailedBed> bedsTobeInserted = GetBedsLogic(startPoint, endPoint, 3);
-                    List<FamilyInstance> placedBeds = new List<FamilyInstance>();
-                    foreach (var bed in bedsTobeInserted)
-                    {
+                //Placing beds in order...
+                List<DetailedBed> bedsTobeInserted = GetBedsLogic(startPoint, endPoint, 3);
+                List<FamilyInstance> placedBeds = new List<FamilyInstance>();
+                foreach (var bed in bedsTobeInserted)
+                {
                         placedBeds.Add(bed.PlaceBed());
                     }
                     
@@ -79,7 +80,7 @@ namespace AdvansysPOC.Logic
             XYZ direction = (endpoint - startpoint).Normalize();
 
             // Rules and formulas
-            int oal = (int)startpoint.DistanceTo(endpoint);
+            int oal = (int)Math.Round(startpoint.DistanceTo(endpoint));
 
             //Entry...
             DetailedBed entryBed = new DetailedBed();
@@ -99,7 +100,7 @@ namespace AdvansysPOC.Logic
             DetailedBed brakeBed = new DetailedBed();
             brakeBed.Length = 12;
             brakeBed.BedType = BedType.Brake;
-            brakeBed.StartPoint = exitBed.StartPoint - exitBed.Length * direction;
+            brakeBed.StartPoint = exitBed.StartPoint - (brakeBed.Length - 1) * direction;
             brakeBed.Direction = direction;
 
             outBeds.Add(entryBed);
@@ -120,6 +121,9 @@ namespace AdvansysPOC.Logic
                 ctf351.Length = ctfLen;
                 ctf351.BedType = BedType.C351CTF;
                 ctf351.StartPoint = entryBed.GetEndPoint();
+                ctf351.Direction = direction;
+
+                remainingLength -= (int)ctf351.Length;
 
                 outBeds.Add(ctf351);
 
@@ -135,11 +139,17 @@ namespace AdvansysPOC.Logic
                     ctf351.Length = 7;
                     ctf351.BedType = BedType.C351CTF;
                     ctf351.StartPoint = entryBed.GetEndPoint();
+                    ctf351.Direction = direction;
+
 
                     DetailedBed ctf352 = new DetailedBed();
                     ctf352.Length = 6;
                     ctf352.BedType = BedType.C352;
                     ctf352.StartPoint = ctf351.GetEndPoint();
+                    ctf352.Direction = direction;
+
+
+                    remainingLength -= 13;
 
                     outBeds.Add(ctf351);
                     outBeds.Add(ctf352);
@@ -158,6 +168,10 @@ namespace AdvansysPOC.Logic
                         ctf351.Length = ctfLen;
                         ctf351.BedType = BedType.C351CTF;
                         ctf351.StartPoint = entryBed.GetEndPoint();
+                        ctf351.Direction = direction;
+
+
+                        remainingLength -= (int)ctf351.Length;
 
                         outBeds.Add(ctf351);
 
@@ -171,12 +185,14 @@ namespace AdvansysPOC.Logic
 
                 // Now adding the intermediate beds using a loop...
                 
-                for (int i = 0; i<full352Count; i++)
+                for (int i = 0; i<full352Count && remainingLength > 0; i++)
                 {
                     DetailedBed ctf352 = new DetailedBed();
                     ctf352.Length = 12;
                     ctf352.BedType = BedType.C352;
                     ctf352.StartPoint = lastPoint;
+                    ctf352.Direction = direction;
+
                     if (i == 0) ctf352.HasDrive = true;
 
                     outBeds.Add(ctf352);
@@ -188,44 +204,46 @@ namespace AdvansysPOC.Logic
         }
 
 
+        /*
         public FamilyInstance PlaceEntrance(XYZ startPoint, XYZ vector, double length)
         {
             // XYZ vector = endpoint.substract(startpoint);
 
             string error = "";
             FamilySymbol symbol = FamilyHelper.getFamilySymbol(Constants.EntranceBedFamilyName, Constants.EntranceBedFileName, null, ref error);
-            return FamilyHelper.placePointFamilyWithSubTransaction(symbol, startPoint);
+            return FamilyHelper.placePointFamilyWithSubTransaction(symbol, startPoint, length);
         }
+        */
 
-        public FamilyInstance PlaceEntrance(XYZ startPoint, XYZ endPoint)
+        public FamilyInstance PlaceEntrance(XYZ startPoint, XYZ endPoint, double length)
         {
             string error = "";
             FamilySymbol symbol = FamilyHelper.getFamilySymbol(Constants.EntranceBedFamilyName, Constants.EntranceBedFileName, null, ref error);
-            return FamilyHelper.placePointFamilyWithSubTransaction(symbol, startPoint);
+            return FamilyHelper.placePointFamilyWithSubTransaction(symbol, startPoint, length);
         }
-        public FamilyInstance PlaceExit(XYZ startPoint, XYZ endPoint)
+        public FamilyInstance PlaceExit(XYZ startPoint, XYZ endPoint, double length)
         {
             string error = "";
             FamilySymbol symbol = FamilyHelper.getFamilySymbol(Constants.ExitBedFamilyName, Constants.ExitBedFileName, null, ref error);
-            return FamilyHelper.placePointFamilyWithSubTransaction(symbol, startPoint);
+            return FamilyHelper.placePointFamilyWithSubTransaction(symbol, startPoint, length);
         }
-        public FamilyInstance PlaceCutToFit(XYZ startPoint, XYZ endPoint)
+        public FamilyInstance PlaceCutToFit(XYZ startPoint, XYZ endPoint, double length)
         {
             string error = "";
             FamilySymbol symbol = FamilyHelper.getFamilySymbol(Constants.CTFFamilyName, Constants.CTFFamilyFileName, null, ref error);
-            return FamilyHelper.placePointFamilyWithSubTransaction(symbol, startPoint);
+            return FamilyHelper.placePointFamilyWithSubTransaction(symbol, startPoint, length);
         }
-        public FamilyInstance PlaceDrive(XYZ startPoint, XYZ endPoint)
+        public FamilyInstance PlaceDrive(XYZ startPoint, XYZ endPoint, double length)
         {
             string error = "";
             FamilySymbol symbol = FamilyHelper.getFamilySymbol(Constants.DriveFamilyName, Constants.DriveFamilyFileName, null, ref error);
-            return FamilyHelper.placePointFamilyWithSubTransaction(symbol, startPoint);
+            return FamilyHelper.placePointFamilyWithSubTransaction(symbol, startPoint, length);
         }
-        public FamilyInstance PlaceIntermediateBed(XYZ startPoint, XYZ endPoint)
+        public FamilyInstance PlaceIntermediateBed(XYZ startPoint, XYZ endPoint, double length)
         {
             string error = "";
             FamilySymbol symbol = FamilyHelper.getFamilySymbol(Constants.IntermediateFamilyName, Constants.IntermediateFamilyFileName, null, ref error);
-            return FamilyHelper.placePointFamilyWithSubTransaction(symbol, startPoint);
+            return FamilyHelper.placePointFamilyWithSubTransaction(symbol, startPoint, length);
         }
         public List<FamilyInstance> PlaceSupports(List<FamilyInstance> beds)
         {

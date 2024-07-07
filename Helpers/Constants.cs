@@ -11,6 +11,8 @@ namespace AdvansysPOC
 
         public static string EntranceBedFamilyName = "C380_ENTRY";
         public static string EntranceBedFileName = "C380_ENTRY.rfa";
+        public static string BrakeBedFamilyName = "C353";
+        public static string BrakeBedFileName = "C353.rfa";
         public static string ExitBedFamilyName = "C380_EXIT";
         public static string ExitBedFileName = "C380_EXIT.rfa";
         public static string CTFFamilyName = "C351-2";
