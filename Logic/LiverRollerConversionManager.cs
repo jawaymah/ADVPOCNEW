@@ -2,7 +2,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using Autodesk.Revit.UI;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
+//using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,20 +18,14 @@ namespace AdvansysPOC.Logic
     {
 
         public new List<FamilyInstance> ConvertToDetailed(FamilyInstance instance)
-    {
-        //// Get parameter values
-        //Parameter lengthParam = instance.LookupParameter("Conveyor Length");
-        //Parameter widthParam = instance.LookupParameter("Conveyor Width");
-        //Parameter zoneLengthParam = instance.LookupParameter("Zone Length");
-        //Parameter typeParam = instance.LookupParameter("Conveyor Type");
+        {
+            bool isLeftHand = false;
+            Parameter ConveyorHand = instance.LookupParameter(Constants.ConveyorHand);
+            if (ConveyorHand != null)
+            {
+                isLeftHand = ConveyorHand.AsString().ToLower() == "left";
+            }
 
-        //if (lengthParam != null && typeParam != null)
-        //{
-        //    // Read all needed parameters values
-        //    double conveyorLength = lengthParam.AsDouble();
-        //    double conveyorWidth = widthParam.AsDouble();
-        //    double zoneLength = zoneLengthParam.AsDouble();
-        //    string conveyorType = typeParam.AsValueString();
 
             // Get geometry information
             XYZ startPoint, endPoint;
@@ -63,21 +57,27 @@ namespace AdvansysPOC.Logic
             List<FamilyInstance> placedBeds = new List<FamilyInstance>();
             foreach (var bed in bedsTobeInserted)
             {
-                    placedBeds.Add(bed.PlaceBed(convWidth));
+                FamilyInstance inst = bed.PlaceBed(convWidth);
+                placedBeds.Add(inst);
+                if (bed.HasDrive)
+                {
+
+                    //placedBeds.Add(bed.PlaceDrive(isLeftHand));
                 }
-                    
-                //Grouping beds into an assembly...
+            }
 
-                //Rotate if needed
+            //Grouping beds into an assembly...
+            if (placedBeds.Count > 0)
+            {
+                ElementId categoryId = placedBeds[0].Category.Id;
+                AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, placedBeds.Select(s => s.Id).ToList(), categoryId);
+            }
 
-                //Delete generic family
-                Globals.Doc.Delete(instance.Id);
+            //Rotate if needed
 
-                //tr.Commit();
-            //}
+            //Delete generic family
+            Globals.Doc.Delete(instance.Id);
 
-
-        //}
         return null;
     }
 
