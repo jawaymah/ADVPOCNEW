@@ -5,16 +5,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Office.Interop.Excel;
+
 
 namespace AdvansysPOC.Logic
 {
     public class DetailedBed
     {
-        public DetailedBed() 
+        public DetailedBed()
         {
-            this.HasDrive = false;    
+            this.HasDrive = false;
         }
-		//public DetailedBed NextBed { get; set; }
+        //public DetailedBed NextBed { get; set; }
         //public DetailedBed PrevBed { get; set; }
         public XYZ StartPoint { get; set; }
         public XYZ Direction { get; set; }
@@ -30,7 +32,7 @@ namespace AdvansysPOC.Logic
             //return EndPoint.DistanceTo(StartPoint);
         }
 
-        public FamilyInstance PlaceBed()
+        public FamilyInstance PlaceBed(int width)
         {
             string error = "";
             string familyName = Constants.CTFFamilyName;
@@ -68,7 +70,8 @@ namespace AdvansysPOC.Logic
                 default:
                     break;
             }
-            FamilySymbol symbol = FamilyHelper.getFamilySymbolwithoutTransaction(familyName, fileName, null, ref error);
+
+            FamilySymbol symbol = FamilyHelper.getFamilySymbolwithoutTransaction(familyName, fileName, null, width, ref error);
             FamilyInstance ins = FamilyHelper.placePointFamilyWithSubTransaction(symbol, StartPoint, Length);
             if (ins != null)
             {
@@ -76,19 +79,22 @@ namespace AdvansysPOC.Logic
             }
             return ins;
         }
-        public FamilyInstance PlaceDrive(bool ConveyorHandLeft)
-        {
-            string error = "";
-            string familyName = Constants.DriveFamilyName;
-            string fileName = Constants.DriveFamilyFileName;
-            FamilySymbol symbol = FamilyHelper.getFamilySymbolwithoutTransaction(familyName, fileName, null, ref error);
-            FamilyInstance ins = FamilyHelper.placePointFamilyWithSubTransaction(symbol, StartPoint, Length);
-            if (ins != null)
-            {
-                ins.RotateFamilyToDirection(Globals.Doc, Direction, StartPoint, ConveyorHandLeft);
-            }
-            return ins;
-        }
+
+        //public FamilyInstance PlaceDrive(bool ConveyorHandLeft)
+        //{
+        //    string error = "";
+        //    string familyName = Constants.DriveFamilyName;
+        //    string fileName = Constants.DriveFamilyFileName;
+        //    FamilySymbol symbol = FamilyHelper.getFamilySymbolwithoutTransaction(familyName, fileName, null, ref error);
+        //    FamilyInstance ins = FamilyHelper.placePointFamilyWithSubTransaction(symbol, StartPoint, Length);
+        //    if (ins != null)
+        //    {
+        //        ins.RotateFamilyToDirection(Globals.Doc, Direction, StartPoint, ConveyorHandLeft);
+        //    }
+        //    return ins;
+        //}
+
+
         public List<FamilyInstance> PlaceSupports(FamilyInstance parentBed)
         {
             double conveyorIn = 2.5;
@@ -104,7 +110,7 @@ namespace AdvansysPOC.Logic
             string familyName = Constants.SupportFamilyName;
             string fileName = Constants.SupportFamilyFileName;
             List<FamilyInstance> supports = new List<FamilyInstance>();
-            FamilySymbol symbol = FamilyHelper.getFamilySymbolwithoutTransaction(familyName, fileName, null, ref error);
+            FamilySymbol symbol = FamilyHelper.getFamilySymbolwithoutTransaction(familyName, fileName, null,0,  ref error);
             FamilyInstance insStart = FamilyHelper.placePointFamilyWithSubTransaction(symbol, StartPoint, Length);
             if (insStart != null)
             {
@@ -124,6 +130,7 @@ namespace AdvansysPOC.Logic
             }
 
             return supports;
+
         }
     }
 }

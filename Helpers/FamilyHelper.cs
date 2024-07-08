@@ -109,7 +109,7 @@ namespace AdvansysPOC.Helpers
             return symbol;
         }
 
-        public static FamilySymbol getFamilySymbolwithoutTransaction(string basicFamilyName, string basicFamilyNameWithExtension, FamilySymbol symbol, ref string message)
+        public static FamilySymbol getFamilySymbolwithoutTransaction(string basicFamilyName, string basicFamilyNameWithExtension, FamilySymbol symbol, int width, ref string message)
         {
             if (symbol == null)
             {
@@ -129,7 +129,10 @@ namespace AdvansysPOC.Helpers
                 foreach (ElementId id in family.GetFamilySymbolIds())
                 {
                     familySymbol = Globals.Doc.GetElement(id) as FamilySymbol;
-                    break; // For simplicity, using the first available symbol
+                    if (familySymbol.Name.Contains(width.ToString()))
+                    {
+                        break;
+                    }
                 }
 
                 if (familySymbol == null)
