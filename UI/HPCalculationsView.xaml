@@ -5,9 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AdvansysPOC.UI"
         mc:Ignorable="d"
-        Title="HPCalculationsView" Height="450" Width="1000">
-    <StackPanel x:Name="stackPanel" VerticalAlignment="Stretch"
-                HorizontalAlignment="Stretch">
+        Title="Live Roller Calculations" Height="450" Width="1000">
+
+    <StackPanel x:Name="stackPanel" 
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch"
+                >
+        <Button Content="Save image"
+                Width="200"
+                Padding="5"
+                Margin="0,10,0,20"
+                VerticalAlignment="Top"
+                Click="SaveButton_Click"
+                HorizontalAlignment="Center"
+                />
         <Image x:Name="myImg"
                Stretch="None"
                VerticalAlignment="Center"

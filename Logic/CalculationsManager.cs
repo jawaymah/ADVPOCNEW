@@ -126,19 +126,19 @@ namespace AdvansysPOC.Logic
                 }
 
                 string HPString = (xlWorkSheet.Cells[HP_ROW, HP_COLUMN] as Excel.Range).Text.ToString();
-                if (!string.IsNullOrEmpty(HPString))
+                if (!string.IsNullOrEmpty(HPString) && HPString.Contains(" HP"))
                 {
                     result.HP = double.Parse(HPString.Replace("HP", "").TrimEnd());
                 }
 
-                if (double.TryParse((xlWorkSheet.Cells[LONG_SPRING_ROW, LONG_SPRING_COLUMN] as Excel.Range).Text.ToString(), out double longSpring))
+                if (int.TryParse((xlWorkSheet.Cells[LONG_SPRING_ROW, LONG_SPRING_COLUMN] as Excel.Range).Text.ToString(), out int longSpring))
                 {
-                    result.EBP = longSpring;
+                    result.LongSpring = longSpring;
                 }
 
-                if (double.TryParse((xlWorkSheet.Cells[SHORT_SPRING_ROW, SHORT_SPRING_COLUMN] as Excel.Range).Text.ToString(), out double shortSpring))
+                if (int.TryParse((xlWorkSheet.Cells[SHORT_SPRING_ROW, SHORT_SPRING_COLUMN] as Excel.Range).Text.ToString(), out int shortSpring))
                 {
-                    result.EBP = shortSpring;
+                    result.ShortSpring = shortSpring;
                 }
 
                 result.DriveSize = (xlWorkSheet.Cells[DRIVE_SIZE_ROW, DRIVE_SIZE_COLUMN] as Excel.Range).Text.ToString();
@@ -149,7 +149,7 @@ namespace AdvansysPOC.Logic
             }
             finally
             {
-                xlWorkBook.Close();
+                xlWorkBook.Close(SaveChanges: false);
                 xlApp.Quit();
             }
             return result;
@@ -177,7 +177,7 @@ namespace AdvansysPOC.Logic
                     _calculationsView.Hide();
                     _calculationsView = null;
                 }
-                _calculationsView = new HPCalculationsView();
+                _calculationsView = new HPCalculationsView { Image =  image };
                 _calculationsView.AddImage(image);
                 _calculationsView.Show();
             }
@@ -187,7 +187,7 @@ namespace AdvansysPOC.Logic
             }
             finally
             {
-                xlWorkBook.Close();
+                xlWorkBook.Close(SaveChanges: false);
                 xlApp.Quit();
             }
         }

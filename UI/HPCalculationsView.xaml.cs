@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -21,6 +22,7 @@ namespace AdvansysPOC.UI
     /// </summary>
     public partial class HPCalculationsView : Window
     {
+        public System.Drawing.Image Image { get; set; }
         public HPCalculationsView()
         {
             InitializeComponent();
@@ -32,7 +34,7 @@ namespace AdvansysPOC.UI
             {
                 
                 VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center,
+                HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
                 Stretch = Stretch.None,
             };
             using (var ms = new MemoryStream())
@@ -51,12 +53,14 @@ namespace AdvansysPOC.UI
             stackPanel.Children.Add(image);
         }
 
-        //public void AddImages(List<BitmapSource> newImages)
-        //{
-        //    for (int i = 0; i < newImages.Count; i++)
-        //    {
-        //        AddImage(newImages[i]);
-        //    }
-        //}
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Images|*.png;";
+            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                this.Image.Save(saveFileDialog.FileName, ImageFormat.Png);
+            }
+        }
     }
 }
