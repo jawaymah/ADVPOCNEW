@@ -5,6 +5,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Transactions;
 using System.Windows.Controls;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
@@ -42,32 +43,69 @@ namespace AdvansysPOC
             LiverRollerConversionManager managner = new LiverRollerConversionManager();
 
             List<FamilyInstance> detailed = new List<FamilyInstance>();
+            string allmessage = "Conversion Report: " + System.Environment.NewLine;
             using(TransactionGroup group = new TransactionGroup(Doc))
             {
                 group.Start("Converting to Detail");
                 foreach (var family in genericFamilies)
                 {
-                    using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
-                    {
-                        tr.Start("Create Beds");
-                        detailed = managner.ConvertToDetailed(family);
-                        Doc.Regenerate();
+                    Line cl = (family.Location as LocationCurve).Curve as Line;
+                    XYZ startPoint = cl.GetEndPoint(0);
+                    XYZ endPoint = cl.GetEndPoint(1);
+                    double oal = System.Math.Round(startPoint.DistanceTo(endPoint), 4);
 
-                        tr.Commit();
-                    }
-                    using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
+                    Parameter zoneLength = family.LookupParameter("Zone_Length");
+                    double zl = zoneLength.AsDouble();
+                    int zone = (int)zl;
+                    Parameter unitId = family.LookupParameter(Constants.ConveyorNumber);
+                    string uId = unitId.AsValueString();
+
+                    if (oal > 200)
                     {
-                        tr.Start("add assemblies");
-                        addElementsToaSSEMBLY(detailed.Select(s => s.Id).ToList());
-                        tr.Commit();
+                        allmessage = addReportItem(allmessage, $"unit {uId}: Failed! -Length exceeds 200ft");
+                        continue;
                     }
+                    else if (zone == 2 && oal < 17)
+                    {
+                        allmessage = addReportItem(allmessage, $"unit {uId}: Failed! -Length is less than 17ft");
+                        continue;
+                    }
+                    else if (zone == 3 && oal < 19)
+                    {
+                        allmessage = addReportItem(allmessage, $"unit {uId}: Failed! -Length is less than 19ft");
+                        continue;
+                    }
+                    else
+                    {
+                        using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
+                        {
+                            tr.Start("Create Beds");
+                            detailed = managner.ConvertToDetailed(family);
+                            Doc.Regenerate();
+
+                            tr.Commit();
+                        }
+                        using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
+                        {
+                            tr.Start("add assemblies");
+                            addElementsToaSSEMBLY(detailed.Select(s => s.Id).ToList());
+                            tr.Commit();
+                        }
+                        allmessage = addReportItem(allmessage, $"unit {uId}: Succeded!");
+                    }
+
                 }
                 group.Commit();
             }
-
+            Autodesk.Revit.UI.TaskDialog.Show("Conversion Report", allmessage);
             return Result.Succeeded;
         }
-
+        public string addReportItem(string allMessage, string message)
+        {
+            allMessage += System.Environment.NewLine;
+            allMessage += message;
+            return allMessage;
+        }
         public void addElementsToaSSEMBLY(List<ElementId> elementIds)
         {
             if (elementIds.Count > 0)
