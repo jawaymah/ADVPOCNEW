@@ -80,19 +80,19 @@ namespace AdvansysPOC.Logic
             return ins;
         }
 
-        //public FamilyInstance PlaceDrive(bool ConveyorHandLeft)
-        //{
-        //    string error = "";
-        //    string familyName = Constants.DriveFamilyName;
-        //    string fileName = Constants.DriveFamilyFileName;
-        //    FamilySymbol symbol = FamilyHelper.getFamilySymbolwithoutTransaction(familyName, fileName, null, ref error);
-        //    FamilyInstance ins = FamilyHelper.placePointFamilyWithSubTransaction(symbol, StartPoint, Length);
-        //    if (ins != null)
-        //    {
-        //        ins.RotateFamilyToDirection(Globals.Doc, Direction, StartPoint, ConveyorHandLeft);
-        //    }
-        //    return ins;
-        //}
+        public FamilyInstance PlaceDrive(bool ConveyorHandLeft)
+        {
+            string error = "";
+            string familyName = Constants.DriveFamilyName;
+            string fileName = Constants.DriveFamilyFileName;
+            FamilySymbol symbol = FamilyHelper.getFamilySymbolwithoutTransaction(familyName, fileName, null, 0, ref error);
+            FamilyInstance ins = FamilyHelper.placePointFamilyWithSubTransaction(symbol, StartPoint, Length);
+            if (ins != null)
+            {
+                ins.RotateFamilyToDirection(Globals.Doc, Direction, StartPoint, ConveyorHandLeft);
+            }
+            return ins;
+        }
 
 
         public List<FamilyInstance> PlaceSupports(FamilyInstance parentBed)

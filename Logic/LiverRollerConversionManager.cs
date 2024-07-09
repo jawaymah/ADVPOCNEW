@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -19,6 +20,7 @@ namespace AdvansysPOC.Logic
 
         public new List<FamilyInstance> ConvertToDetailed(FamilyInstance instance)
         {
+            string error = "";
             bool isLeftHand = false;
             Parameter ConveyorHand = instance.LookupParameter(Constants.ConveyorHand);
             if (ConveyorHand != null)
@@ -33,6 +35,8 @@ namespace AdvansysPOC.Logic
             //Line cl = instance.getFamilyCL();
             startPoint = cl.GetEndPoint(0);
             endPoint = cl.GetEndPoint(1);
+            double oal = Math.Round(startPoint.DistanceTo(endPoint), 4);
+
 
             int convWidth =(int) (12 * instance.Symbol.LookupParameter("Conveyor_OAW").AsDouble());
 
@@ -62,15 +66,22 @@ namespace AdvansysPOC.Logic
                 if (bed.HasDrive)
                 {
 
-                    //placedBeds.Add(bed.PlaceDrive(isLeftHand));
+                    placedBeds.Add(bed.PlaceDrive(isLeftHand));
                 }
+                placedBeds.AddRange(bed.PlaceSupports(inst));
+
             }
+
+            // Adding guiderails...
+            FamilySymbol guideRailSymbol = FamilyHelper.getFamilySymbolwithoutTransaction(Constants.GuideRailFamilyName, Constants.GuideRailFamilyFileName, null, convWidth, ref error);
+            FamilyInstance ins = FamilyHelper.placePointFamilyWithSubTransaction(guideRailSymbol, startPoint, oal);
+            placedBeds.Add(ins);
 
             //Grouping beds into an assembly...
             if (placedBeds.Count > 0)
             {
                 ElementId categoryId = placedBeds[0].Category.Id;
-                AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, placedBeds.Select(s => s.Id).ToList(), categoryId);
+                //AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, placedBeds.Select(s => s.Id).ToList(), categoryId);
             }
 
             //Rotate if needed

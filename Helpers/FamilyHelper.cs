@@ -179,7 +179,14 @@ namespace AdvansysPOC.Helpers
                         lengthParameter.Set(length);
                     }
                 }
-
+                else if (symbol.FamilyName.Contains("C2000"))
+                {
+                    Parameter lengthParameter = instance.LookupParameter("GR_LENGTH");
+                    if (lengthParameter != null && lengthParameter.StorageType == StorageType.Double)
+                    {
+                        lengthParameter.Set(length);
+                    }
+                }
 
                 t.Commit();
             }
