@@ -89,7 +89,7 @@ namespace AdvansysPOC.Logic
             //Delete generic family
             Globals.Doc.Delete(instance.Id);
 
-        return null;
+        return placedBeds;
     }
 
 

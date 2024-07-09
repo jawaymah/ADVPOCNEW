@@ -41,17 +41,28 @@ namespace AdvansysPOC
             }
             LiverRollerConversionManager managner = new LiverRollerConversionManager();
 
-            using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
+            List<FamilyInstance> detailed = new List<FamilyInstance>();
+            using(TransactionGroup group = new TransactionGroup(Doc))
             {
-                tr.Start("Converting to Detail");
+                group.Start("Converting to Detail");
                 foreach (var family in genericFamilies)
                 {
-                    List<FamilyInstance> detailed = managner.ConvertToDetailed(family);
-                    //addElementsToaSSEMBLY(detailed.Select(s => s.Id).ToList());
-                }
-                
+                    using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
+                    {
+                        tr.Start("Create Beds");
+                        detailed = managner.ConvertToDetailed(family);
+                        Doc.Regenerate();
 
-                tr.Commit();
+                        tr.Commit();
+                    }
+                    using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
+                    {
+                        tr.Start("add assemblies");
+                        addElementsToaSSEMBLY(detailed.Select(s => s.Id).ToList());
+                        tr.Commit();
+                    }
+                }
+                group.Commit();
             }
 
             return Result.Succeeded;
@@ -59,14 +70,20 @@ namespace AdvansysPOC
 
         public void addElementsToaSSEMBLY(List<ElementId> elementIds)
         {
-            // Create the assembly instance
-            AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, elementIds, getSpoolNamingCategory());
-
-            if (assemblyInstance != null)
+            if (elementIds.Count > 0)
             {
-                // Optionally, you can set properties of the assembly instance
-                assemblyInstance.AssemblyTypeName = "Custom Assembly Type"; // Example of setting assembly type
+                ElementId categoryId = Globals.Doc.GetElement(elementIds[0]).Category.Id;
+                AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, elementIds, categoryId);
             }
+
+            //// Create the assembly instance
+            //AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, elementIds, getSpoolNamingCategory());
+
+            //if (assemblyInstance != null)
+            //{
+            //    // Optionally, you can set properties of the assembly instance
+            //    assemblyInstance.AssemblyTypeName = "Custom Assembly Type"; // Example of setting assembly type
+            //}
         }
 
         public static ElementId getSpoolNamingCategory()
