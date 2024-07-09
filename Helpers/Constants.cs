@@ -10,6 +10,7 @@ namespace AdvansysPOC
         public static string ConveyorHand = "Conveyor_Hand";
         public static string LastUnitId = "NextUnitId";
         public static string Conveyor_Elevation_In = "Conveyor_Elevation_In";
+        public static string Conveyor_Envelop = "Load_Envelope";
 
         public static string EntranceBedFamilyName = "C380_ENTRY";
         public static string EntranceBedFileName = "C380_ENTRY.rfa";

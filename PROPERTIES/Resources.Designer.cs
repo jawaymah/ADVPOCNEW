@@ -113,6 +113,26 @@ namespace AdvansysPOC.PROPERTIES {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap filterIco {
+            get {
+                object obj = ResourceManager.GetObject("filterIco", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap filterIcoFilled {
+            get {
+                object obj = ResourceManager.GetObject("filterIcoFilled", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap save32 {
             get {
                 object obj = ResourceManager.GetObject("save32", resourceCulture);
