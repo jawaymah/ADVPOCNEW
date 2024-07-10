@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using static Autodesk.Revit.DB.SpecTypeId;
 
 namespace AdvansysPOC.Logic
 {
@@ -71,17 +72,8 @@ namespace AdvansysPOC.Logic
 
             }
 
-            // Adding guiderails...
-            FamilySymbol guideRailSymbol = FamilyHelper.getFamilySymbolwithoutTransaction(Constants.GuideRailFamilyName, Constants.GuideRailFamilyFileName, null, convWidth, ref error);
-            FamilyInstance ins = FamilyHelper.placePointFamilyWithSubTransaction(guideRailSymbol, startPoint, oal);
-            placedBeds.Add(ins);
-
-            //Grouping beds into an assembly...
-            if (placedBeds.Count > 0)
-            {
-                ElementId categoryId = placedBeds[0].Category.Id;
-                //AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, placedBeds.Select(s => s.Id).ToList(), categoryId);
-            }
+            XYZ direction = (endPoint - startPoint).Normalize();
+            PlaceGuideRail(oal, startPoint, direction, ref placedBeds, convWidth, ref error);
 
             //Rotate if needed
 
@@ -224,6 +216,29 @@ namespace AdvansysPOC.Logic
             return outBeds;
         }
 
+        public void PlaceGuideRail(double oal, XYZ startPoint, XYZ Direction, ref List<FamilyInstance> beds, int convWidth, ref string error)
+        {
+            // Adding guiderails...
+            FamilySymbol guideRailSymbol = FamilyHelper.getFamilySymbolwithoutTransaction(Constants.GuideRailFamilyName, Constants.GuideRailFamilyFileName, null, convWidth, ref error);
+            int count = (int)(oal / 10);
+            double length = 0;
+            for (int i = 0; i < count; i++)
+            {
+                FamilyInstance inst = FamilyHelper.placePointFamilyWithSubTransaction(guideRailSymbol, startPoint + length*Direction, 10);
+                if (inst != null)
+                    inst.RotateFamilyToDirection(Globals.Doc, Direction, startPoint + length * Direction);
+                beds.Add(inst);
+                length += 10;
+            }
+            if(oal%10 > 0)
+            {
+                FamilyInstance inst = FamilyHelper.placePointFamilyWithSubTransaction(guideRailSymbol, startPoint + length * Direction, oal % 10);
+                if (inst != null)
+                    inst.RotateFamilyToDirection(Globals.Doc, Direction, startPoint + length * Direction);
+                beds.Add(inst);
+            }
+                
+        }
 
         /*
         public FamilyInstance PlaceEntrance(XYZ startPoint, XYZ vector, double length)
