@@ -214,28 +214,29 @@ namespace AdvansysPOC
             }
             if (panelName == "Controls")
             {
-                var pullButtonDetailed = RevitUi.AddPullDownButtonData("DetailedConveyors", "Detailed Conveyors (CLR)");
+                var pullButtonDetailed = RevitUi.AddPullDownButtonData("controls", "Controls");
                 Autodesk.Revit.UI.PulldownButton PulldownButtons = panel.AddItem(pullButtonDetailed) as PulldownButton;
 
                 //creat Detailed beds commands
-                var enterenceData = RevitUi.AddPushButtonData("C380_ENTRY", typeof(CreateEnterenceBedCommand), Resources.add32, typeof(DocumentAvailablility));
-                var ExitData = RevitUi.AddPushButtonData("C380_EXIT", typeof(CreateExitBedCommand), Resources.add32, typeof(DocumentAvailablility));
-                var IntermediateData = RevitUi.AddPushButtonData("C352", typeof(CreateIntermediateBedCommand), Resources.add32, typeof(DocumentAvailablility));
-                var CTFData = RevitUi.AddPushButtonData("C351", typeof(CreateCutToFitCommand), Resources.add32, typeof(DocumentAvailablility));
-                var DriveData = RevitUi.AddPushButtonData("C370", typeof(CreateDriveCommand), Resources.add32, typeof(DocumentAvailablility));
-                var SupportData = RevitUi.AddPushButtonData("C2101", typeof(CreateSupportCommand), Resources.add32, typeof(DocumentAvailablility));
-                var GuideRailData = RevitUi.AddPushButtonData("C2000", typeof(CreateGuideRailCommand), Resources.add32, typeof(DocumentAvailablility));
-                var BrakeBedData = RevitUi.AddPushButtonData("C353", typeof(CreateBrakeBedCommand), Resources.add32, typeof(DocumentAvailablility));
+                var DISCControlCOmmand = RevitUi.AddPushButtonData("DISC", typeof(DISCControlCOmmand), Resources.add32, typeof(DocumentAvailablility));
+                var EPCControlCOmmand = RevitUi.AddPushButtonData("EPC", typeof(EPCControlCOmmand), Resources.add32, typeof(DocumentAvailablility));
+                var IOControlCOmmand = RevitUi.AddPushButtonData("IO", typeof(IOControlCOmmand), Resources.add32, typeof(DocumentAvailablility));
+                var MOTORControlCOmmand = RevitUi.AddPushButtonData("MOTOR", typeof(MOTORControlCOmmand), Resources.add32, typeof(DocumentAvailablility));
+                var PEMControlCOmmand = RevitUi.AddPushButtonData("PEM", typeof(PEMControlCOmmand), Resources.add32, typeof(DocumentAvailablility));
+                var SIOControlCOmmand = RevitUi.AddPushButtonData("SIO", typeof(SIOControlCOmmand), Resources.add32, typeof(DocumentAvailablility));
+                var SOLControlCOmmand = RevitUi.AddPushButtonData("SOL", typeof(SOLControlCOmmand), Resources.add32, typeof(DocumentAvailablility));
+                var VFDControlCOmmand = RevitUi.AddPushButtonData("VFD", typeof(VFDControlCOmmand), Resources.add32, typeof(DocumentAvailablility));
+                var ZIMControlCOmmand = RevitUi.AddPushButtonData("ZIM", typeof(ZIMControlCOmmand), Resources.add32, typeof(DocumentAvailablility));
 
-                PulldownButtons.AddPushButton(enterenceData);
-                PulldownButtons.AddPushButton(BrakeBedData);
-                PulldownButtons.AddPushButton(ExitData);
-                PulldownButtons.AddPushButton(IntermediateData);
-                PulldownButtons.AddPushButton(CTFData);
-                PulldownButtons.AddSeparator();
-                PulldownButtons.AddPushButton(DriveData);
-                PulldownButtons.AddPushButton(SupportData);
-                PulldownButtons.AddPushButton(GuideRailData);
+                PulldownButtons.AddPushButton(DISCControlCOmmand);
+                PulldownButtons.AddPushButton(EPCControlCOmmand);
+                PulldownButtons.AddPushButton(IOControlCOmmand);
+                PulldownButtons.AddPushButton(MOTORControlCOmmand);
+                PulldownButtons.AddPushButton(PEMControlCOmmand);
+                PulldownButtons.AddPushButton(SIOControlCOmmand);
+                PulldownButtons.AddPushButton(SOLControlCOmmand);
+                PulldownButtons.AddPushButton(VFDControlCOmmand);
+                PulldownButtons.AddPushButton(ZIMControlCOmmand);
 
             }
             if (panelName == "Supports")
