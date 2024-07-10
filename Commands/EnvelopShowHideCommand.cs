@@ -20,9 +20,9 @@ namespace AdvansysPOC
                 tr.Start("Flip envelop parameter state");
                 foreach (AssemblyInstance unit in lSpools)
                 {
-                    //Parameter para = unit.LookupParameter(Constants.ConveyorNumber);
-                    //if (para != null)
-                    //{
+                    Parameter para = unit.LookupParameter(Constants.ConveyorNumber);
+                    if (para != null)
+                    {
                         foreach (var itemId in unit.GetMemberIds())
                         {
                         FamilyInstance inst= Globals.Doc.GetElement(itemId) as FamilyInstance;
@@ -41,7 +41,7 @@ namespace AdvansysPOC
                                     p.Set(0);
                             }
                         }
-                    //}
+                    }
                 }
                 tr.Commit();
             }

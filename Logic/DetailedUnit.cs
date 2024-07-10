@@ -25,15 +25,67 @@ namespace AdvansysPOC.Logic
         {
             Beds = new List<DetailedBed>();
         }
+        public DetailedUnit(AssemblyInstance instance)
+        {
+            Speed = "160";
+            StartPoint = XYZ.Zero;
+            EndPoint = XYZ.Zero;
+            unitId = "CLR" + instance.LookupParameter(Constants.ConveyorNumber)?.AsValueString();
+            foreach (var itemId in instance.GetMemberIds())
+            {
+                FamilyInstance inst = Globals.Doc.GetElement(itemId) as FamilyInstance;
+                string name = inst.Symbol.FamilyName;
+                if (name == Constants.EntranceBedFamilyName)
+                {
+                    StartPoint = (inst.Location as LocationPoint).Point;
+                }
+                if (name == Constants.ExitBedFamilyName)
+                {
+                    Parameter p = inst.LookupParameter(Constants.Bed_Length);
+                    if (p != null)
+                    {
+                        EndPoint = (inst.Location as LocationPoint).Point + inst.HandOrientation * p.AsDouble();
+                    }
+                    p = inst.LookupParameter(Constants.Bed_Width);
+                    if (p != null)
+                    {
+                        Width = p.AsValueString();
+                    }
+                }
+                if (name == Constants.DriveFamilyName)
+                {
+                    Parameter p = inst.LookupParameter(Constants.DriveBed_Speed);
+                    if (p != null)
+                    {
+                        Speed = p.AsValueString();
+                    }
+                }
+                //Parameter p = inst.LookupParameter(Constants.Conveyor_Envelop);
+                //if (p != null)
+                //{
+                //    if (p.AsInteger() == 0)
+                //        p.Set(1);
+                //    else
+                //        p.Set(0);
+                //}
+            }
+            Length = EndPoint.DistanceTo(StartPoint).ToString();
+            Type = "CLR";
+        }
 
         public List<string> ExportToSym3()
         {
+            //"OBJECTNAME", "X", "Y", "Z", "Length", "Width", "DIRECTION", "TYPE", "Speed", "CONNECTION", "AUX"
             List<string> sym3 = new List<string>();
             sym3.Add(ObjectName());
             sym3.Add(X());
             sym3.Add(Y());
             sym3.Add(Z());
+            sym3.Add(Length);
+            sym3.Add(Width);
             sym3.Add(direction());
+            sym3.Add(Type);
+            sym3.Add(Speed);
             sym3.Add(Connection());
             sym3.Add(AUX());
             return sym3;
@@ -61,7 +113,8 @@ namespace AdvansysPOC.Logic
 
         public string direction()
         {
-            return EndPoint.AngleTo(StartPoint).ToString();
+            XYZ dir = EndPoint.Subtract(StartPoint).Normalize();
+            return Math.Round(EndPoint.Subtract(StartPoint).Normalize().AngleTo(XYZ.BasisX) *180/Math.PI).ToString();
         }
 
         public string Connection()

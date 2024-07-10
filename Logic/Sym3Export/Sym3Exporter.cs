@@ -9,6 +9,7 @@ using OfficeOpenXml;
 using System;
 using System.IO;
 using System.Diagnostics;
+using Autodesk.Revit.DB;
 
 namespace AdvansysPOC.Logic.Sym3Export
 {
@@ -130,8 +131,9 @@ namespace AdvansysPOC.Logic.Sym3Export
             }
         }
 
-    public static void Run(List<DetailedUnit> units)
+        public static void Run()
         {
+            List<DetailedUnit>  units = OrderBeds();
             string filePath = "output.xlsx";
 
             // Create Excel package
@@ -171,12 +173,90 @@ namespace AdvansysPOC.Logic.Sym3Export
                     }
                 }
 
-                // Save the Excel file
-                FileInfo excelFile = new FileInfo(IOHelper.GetSaveFilePath(filePath));
-                package.SaveAs(excelFile);
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                var utf8 = Encoding.GetEncoding("UTF-8");
+                // Save the Excel file with UTF-8 encoding
+                FileInfo excelFile = new FileInfo(filePath);
+                //using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                //{
+                //    package.SaveAs(fileStream);
+                //}
+
+                // Save to a MemoryStream
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    package.SaveAs(memoryStream);
+
+                    // Write MemoryStream to file
+                    File.WriteAllBytes(filePath, memoryStream.ToArray());
+                }
+
+                Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                Console.WriteLine($"Excel file '{filePath}' created successfully.");
             }
 
             Console.WriteLine($"Excel file '{filePath}' created successfully.");
+        }
+
+        public static List<DetailedUnit> OrderBeds()
+        {
+            List<DetailedUnit> units = GetUnits().OrderBy(s => s.unitId).ToList();
+            foreach (var unit in units)
+            {
+                SetPrevandNextUnit(units, unit);
+            }
+            return units;
+        }
+        public static List<AssemblyInstance> CollectAssemblies()
+        {
+            List<AssemblyInstance> instances = new List<AssemblyInstance>();
+            var lSpools = new FilteredElementCollector(Globals.Doc).OfClass(typeof(AssemblyInstance)).ToElements();
+            foreach (AssemblyInstance unit in lSpools)
+            {
+                Parameter para = unit.LookupParameter(Constants.ConveyorNumber);
+                if (para != null)
+                {
+                    instances.Add(unit);
+                }
+            }
+            return instances;
+        }
+        public static List<DetailedUnit> GetUnits()
+        {
+            List < DetailedUnit > detailedBeds = new List<DetailedUnit>();
+            foreach (var assembly in CollectAssemblies())
+            {
+                detailedBeds.Add(new DetailedUnit(assembly));
+            }
+            return detailedBeds;
+        }
+        public static void SetPrevandNextUnit(List<DetailedUnit> units, DetailedUnit unit)
+        {
+            foreach (var item in units)
+            {
+                if (item.unitId != unit.unitId)
+                {
+                    if (unit.PrevUnit == null)
+                    {
+                        if (unit.StartPoint.DistanceTo(item.EndPoint) < 0.01)
+                        {
+                            unit.PrevUnit = item;
+                            item.NextUnit = unit;
+                        }
+                    }
+                    if (unit.NextUnit == null)
+                    {
+                        if (unit.EndPoint.DistanceTo(item.StartPoint) < 0.01)
+                        {
+                            unit.NextUnit = item;
+                            item.PrevUnit = unit;
+                        }
+                            
+                    }
+                }
+            }
+
+
         }
     }
 }

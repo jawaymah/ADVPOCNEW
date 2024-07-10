@@ -13,6 +13,9 @@ namespace AdvansysPOC
         public static string Conveyor_Envelop = "Load_Envelope";
         public static string Conveyor_ZoneLength = "Zone_Length";
         public static string Conveyor_ZoneLengthinBeds = "CLR_ZONES";
+        public static string Bed_Length = "Bed_Length";
+        public static string Bed_Width = "Bed_Width";
+        public static string DriveBed_Speed = "CLR_SPEED_FPM";
 
         public static string EntranceBedFamilyName = "C380_ENTRY";
         public static string EntranceBedFileName = "C380_ENTRY.rfa";
