@@ -130,7 +130,7 @@ namespace AdvansysPOC.Commands
                         {
                             if (bed.LookupParameter(Constants.Bed_Width) is Parameter widthParameter)
                             {
-                                bedWidth = widthParameter.AsDouble();
+                                bedWidth = widthParameter.AsDouble()*12; // Value comes in feet and we need it in inches
                             }
                             double bedLength = lengthParameter.AsDouble();
                             if (bed.Symbol.FamilyName == Constants.EntranceBedFamilyName || bed.Symbol.FamilyName == Constants.ExitBedFamilyName)
