@@ -133,7 +133,7 @@ namespace AdvansysPOC.Logic
             // Remaining length after deducting enter, exit, brake...
             double remainingLength = oal - entryBed.Length - exitBed.Length - brakeBed.Length;
 
-            if (remainingLength / 12 == 0)
+            if ((int) remainingLength / 12 == 0)
             {
                 // Add the drive to brake bed...
                 brakeBed.HasDrive = true;
@@ -155,7 +155,7 @@ namespace AdvansysPOC.Logic
             {
                 int full352Count = (int) remainingLength / 12;
                 XYZ lastPoint = new XYZ();
-                if ((int)remainingLength % 12 == 1 && full352Count > 0)
+                if (remainingLength % 12 > 0 && full352Count > 0)
                 {
                     //This is the case when we need CTF C352 with length 6 ft beside 7 ft C351...
                     DetailedBed ctf351 = new DetailedBed();
@@ -181,6 +181,7 @@ namespace AdvansysPOC.Logic
 
                     // Don't forget to deduct the full 352 by 1...
                     full352Count--;
+                    if (full352Count == 0) brakeBed.HasDrive = true;
                 }
                 else // Here we have at least one full bed and a ctf 351 normally...
                 {

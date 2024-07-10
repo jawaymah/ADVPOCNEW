@@ -128,8 +128,6 @@ namespace AdvansysPOC
                 double rollerCenter = 0;
                 var memeberIds = assemblyInstance.GetMemberIds();
                 double driveSpeed = 0;
-                    assemblyInstance.SetUnitId(unitId);
-                int conveyorNumber = assemblyInstance.LookupParameter(Constants.ConveyorNumber).AsInteger();
                 foreach (var memeberId in memeberIds)
                 {
                     Element e = Globals.Doc.GetElement(memeberId);
@@ -145,11 +143,12 @@ namespace AdvansysPOC
                             driveSpeed = speedParameter.AsDouble();
                         }
                     }
-                    LiveRollerCalculationInputs input = new LiveRollerCalculationInputs { ConveyorNumber = conveyorNumber, Length = length, RollerCenters = rollerCenter };
+                    LiveRollerCalculationInputs input = new LiveRollerCalculationInputs { ConveyorNumber = unitId, Length = length, RollerCenters = rollerCenter };
                     if (driveSpeed > 0) input.Speed = driveSpeed;
                     LiveRollerCalculationResult res = CalculationsManager.GetLiveRollerCalculationResult(input);
                     assemblyInstance.SetParameter(Constants.HP, (int)res.HP);
                     assemblyInstance.SetParameter(Constants.Center_Drive, res.DriveSize);
+                    assemblyInstance.SetUnitId(unitId);
                 }
 
                 //// Create the assembly instance
