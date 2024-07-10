@@ -14,7 +14,7 @@ namespace AdvansysPOC.Helpers
     public static class ParametersHelper
     {
 
-        public static void SetParameter(this FamilyInstance instance, string parameter, string value)
+        public static void SetParameter(this Element instance, string parameter, string value)
         {
             try
             {
@@ -29,6 +29,7 @@ namespace AdvansysPOC.Helpers
             }
 
         }
+
         public static void SetTypeParameter(this FamilyInstance instance, string parameter, double value)
         {
             Parameter p = instance.Symbol.LookupParameter(parameter);
@@ -183,6 +184,16 @@ namespace AdvansysPOC.Helpers
                 param.Set(param.AsInteger() + 5);
             }
 
+        }
+
+        public static void SetUnitId(FamilyInstance instance, string unitId)
+        {
+            SetParameter(instance, Constants.ConveyorNumber, unitId);
+        }
+
+        public static void SetUnitId(AssemblyInstance instance, string unitId)
+        {
+            SetParameter(instance, Constants.ConveyorNumber, unitId);
         }
     }
 }

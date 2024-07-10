@@ -18,7 +18,7 @@ namespace AdvansysPOC.Logic
     public class LiverRollerConversionManager : ConversionManager
     {
 
-        public new List<FamilyInstance> ConvertToDetailed(FamilyInstance instance)
+        public new List<FamilyInstance> ConvertToDetailed(FamilyInstance instance, string unitId)
         {
             string error = "";
             bool isLeftHand = false;
@@ -61,14 +61,13 @@ namespace AdvansysPOC.Logic
             List<FamilyInstance> placedBeds = new List<FamilyInstance>();
             foreach (var bed in bedsTobeInserted)
             {
-                FamilyInstance inst = bed.PlaceBed(convWidth);
+                FamilyInstance inst = bed.PlaceBed(convWidth, unitId);
                 placedBeds.Add(inst);
                 if (bed.HasDrive)
                 {
-
-                    placedBeds.Add(bed.PlaceDrive(isLeftHand));
+                    placedBeds.Add(bed.PlaceDrive(isLeftHand, unitId));
                 }
-                placedBeds.AddRange(bed.PlaceSupports(inst));
+                placedBeds.AddRange(bed.PlaceSupports(inst, unitId));
 
             }
 

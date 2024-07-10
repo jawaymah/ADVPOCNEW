@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Transactions;
 using System.Windows.Controls;
+using static Autodesk.Revit.DB.SpecTypeId;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace AdvansysPOC
@@ -86,7 +87,7 @@ namespace AdvansysPOC
                             options.SetFailuresPreprocessor(preproccessor);
                             tr.SetFailureHandlingOptions(options);
 
-                            detailed = managner.ConvertToDetailed(family);
+                            detailed = managner.ConvertToDetailed(family, uId);
                             Doc.Regenerate();
 
                             tr.Commit();
@@ -94,7 +95,7 @@ namespace AdvansysPOC
                         using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
                         {
                             tr.Start("add assemblies");
-                            addElementsToaSSEMBLY(detailed.Select(s => s.Id).ToList());
+                            addElementsToaSSEMBLY(detailed.Select(s => s.Id).ToList(), uId);
                             tr.Commit();
                         }
                         allmessage = addReportItem(allmessage, $"unit {uId}: Succeded!");
@@ -112,12 +113,13 @@ namespace AdvansysPOC
             allMessage += message;
             return allMessage;
         }
-        public void addElementsToaSSEMBLY(List<ElementId> elementIds)
+        public void addElementsToaSSEMBLY(List<ElementId> elementIds, string unitId)
         {
             if (elementIds.Count > 0)
             {
                 ElementId categoryId = Globals.Doc.GetElement(elementIds[0]).Category.Id;
                 AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, elementIds, categoryId);
+                assemblyInstance.SetUnitId(unitId);
             }
 
             //// Create the assembly instance

@@ -32,7 +32,7 @@ namespace AdvansysPOC.Logic
             //return EndPoint.DistanceTo(StartPoint);
         }
 
-        public FamilyInstance PlaceBed(int width)
+        public FamilyInstance PlaceBed(int width, string unitId)
         {
             string error = "";
             string familyName = Constants.CTFFamilyName;
@@ -76,11 +76,12 @@ namespace AdvansysPOC.Logic
             if (ins != null)
             {
                 ins.RotateFamilyToDirection(Globals.Doc, Direction, StartPoint);
+                ins.SetUnitId(unitId);
             }
             return ins;
         }
 
-        public FamilyInstance PlaceDrive(bool ConveyorHandLeft)
+        public FamilyInstance PlaceDrive(bool ConveyorHandLeft, string unitId)
         {
             string error = "";
             string familyName = Constants.DriveFamilyName;
@@ -90,12 +91,13 @@ namespace AdvansysPOC.Logic
             if (ins != null)
             {
                 ins.RotateFamilyToDirection(Globals.Doc, Direction, StartPoint, ConveyorHandLeft);
+                ins.SetUnitId(unitId);
             }
             return ins;
         }
 
 
-        public List<FamilyInstance> PlaceSupports(FamilyInstance parentBed)
+        public List<FamilyInstance> PlaceSupports(FamilyInstance parentBed, string unitId)
         {
             double conveyorIn = 2.5;
             if (parentBed != null)
@@ -116,6 +118,7 @@ namespace AdvansysPOC.Logic
             {
                 insStart.RotateFamilyToDirection(Globals.Doc, Direction, StartPoint);
                 insStart.SetTypeParameter(Constants.Conveyor_Elevation_In, conveyorIn);
+                insStart.SetUnitId(unitId);
             }
             supports.Add(insStart);
             if (BedType == BedType.ExitBed)
@@ -125,6 +128,7 @@ namespace AdvansysPOC.Logic
                 {
                     insEnd.RotateFamilyToDirection(Globals.Doc, Direction, GetEndPoint());
                     insEnd.SetTypeParameter(Constants.Conveyor_Elevation_In, conveyorIn);
+                    insEnd.SetUnitId(unitId);
                 }
                 supports.Add(insEnd);
             }
