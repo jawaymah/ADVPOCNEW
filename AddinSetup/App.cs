@@ -37,6 +37,7 @@ namespace AdvansysPOC
                 // Add panels to the custom tab
                 AddRibbonPanel(a, tabName, "GenericConveyors");
                 AddRibbonPanel(a, tabName, "DetailedConveyors");
+                AddRibbonPanel(a, tabName, "Controls");
                 AddRibbonPanel(a, tabName, "Manager");
                 a.SelectionChanged += Elements_SelectionChanged;
                 CurrentApplication = a;
@@ -210,6 +211,32 @@ namespace AdvansysPOC
 
                 var envelop = RevitUi.AddPushButtonData("Envelop \nShow/Hide", typeof(EnvelopShowHideCommand), Resources.filterIcoFilled, typeof(DocumentAvailablility));
                 Autodesk.Revit.UI.RibbonItem envelopButton = panel.AddItem(envelop);
+            }
+            if (panelName == "Controls")
+            {
+                var pullButtonDetailed = RevitUi.AddPullDownButtonData("DetailedConveyors", "Detailed Conveyors (CLR)");
+                Autodesk.Revit.UI.PulldownButton PulldownButtons = panel.AddItem(pullButtonDetailed) as PulldownButton;
+
+                //creat Detailed beds commands
+                var enterenceData = RevitUi.AddPushButtonData("C380_ENTRY", typeof(CreateEnterenceBedCommand), Resources.add32, typeof(DocumentAvailablility));
+                var ExitData = RevitUi.AddPushButtonData("C380_EXIT", typeof(CreateExitBedCommand), Resources.add32, typeof(DocumentAvailablility));
+                var IntermediateData = RevitUi.AddPushButtonData("C352", typeof(CreateIntermediateBedCommand), Resources.add32, typeof(DocumentAvailablility));
+                var CTFData = RevitUi.AddPushButtonData("C351", typeof(CreateCutToFitCommand), Resources.add32, typeof(DocumentAvailablility));
+                var DriveData = RevitUi.AddPushButtonData("C370", typeof(CreateDriveCommand), Resources.add32, typeof(DocumentAvailablility));
+                var SupportData = RevitUi.AddPushButtonData("C2101", typeof(CreateSupportCommand), Resources.add32, typeof(DocumentAvailablility));
+                var GuideRailData = RevitUi.AddPushButtonData("C2000", typeof(CreateGuideRailCommand), Resources.add32, typeof(DocumentAvailablility));
+                var BrakeBedData = RevitUi.AddPushButtonData("C353", typeof(CreateBrakeBedCommand), Resources.add32, typeof(DocumentAvailablility));
+
+                PulldownButtons.AddPushButton(enterenceData);
+                PulldownButtons.AddPushButton(BrakeBedData);
+                PulldownButtons.AddPushButton(ExitData);
+                PulldownButtons.AddPushButton(IntermediateData);
+                PulldownButtons.AddPushButton(CTFData);
+                PulldownButtons.AddSeparator();
+                PulldownButtons.AddPushButton(DriveData);
+                PulldownButtons.AddPushButton(SupportData);
+                PulldownButtons.AddPushButton(GuideRailData);
+
             }
             if (panelName == "Supports")
             {
