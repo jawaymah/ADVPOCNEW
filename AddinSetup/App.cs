@@ -183,8 +183,8 @@ namespace AdvansysPOC
                 var hpCalculationsButton = RevitUi.AddPushButtonData("HP Calculations", typeof(HPCalculationsCommand), Resources.excelIcon32, typeof(DocumentAvailablility));
                 Autodesk.Revit.UI.RibbonItem PulldownButtons3 = panel.AddItem(hpCalculationsButton);
 
-                //var beltCalculationsButton = RevitUi.AddPushButtonData("Belt Calculations", typeof(BeltCalculationsCommand), Resources.excelIcon32, typeof(DocumentAvailablility));
-                //Autodesk.Revit.UI.RibbonItem PulldownButtons4 = panel.AddItem(beltCalculationsButton);
+                var beltCalculationsButton = RevitUi.AddPushButtonData("Belt Calculations", typeof(BeltCalculationsCommand), Resources.excelIcon32, typeof(DocumentAvailablility));
+                Autodesk.Revit.UI.RibbonItem PulldownButtons4 = panel.AddItem(beltCalculationsButton);
 
                 //IList<Autodesk.Revit.UI.RibbonItem> stackedPulldownButtons = panel.AddStackedItems(pullButtonDataRegular, pullButtonBracingData, pullButtonSpecialData);
                 var pullButtonDetailed = RevitUi.AddPullDownButtonData("DetailedConveyors", "Detailed Conveyors (CLR)");

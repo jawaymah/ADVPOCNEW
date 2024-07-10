@@ -16,7 +16,7 @@ namespace AdvansysPOC.Logic
 {
     internal class BeltCalculationsManager
     {
-        const string filename = "BeltLength.xlsx";
+        const string filename = "BeltLength.xls";
         static string filePath = new Uri(Path.Combine(UIConstants.FilsFolder, filename), UriKind.Absolute).AbsolutePath;
 
         #region Cells numbers
@@ -151,7 +151,7 @@ namespace AdvansysPOC.Logic
                 xlApp = new Microsoft.Office.Interop.Excel.Application();
                 xlWorkBook = xlApp.Workbooks.Open(filePath);
 
-                Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(2);
+                Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(4);
                 List<Image> images = new List<Image>();
                 for (int i = 0; i < inputs.Count; i++)
                 {

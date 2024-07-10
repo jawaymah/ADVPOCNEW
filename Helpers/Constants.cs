@@ -18,6 +18,8 @@ namespace AdvansysPOC
         public static string Bed_Width = "Bed_Width";
         public static string DriveBed_Speed = "CLR_SPEED_FPM";
         public const string Roller_CenterToCenter = "CLR_ROLLER_CENTER";
+        public const string Drive_Speed = "CLR_SPEED_FPM";
+        public const string Center_Drive = "Center_Drive";
 
         public static string EntranceBedFamilyName = "C380_ENTRY";
         public static string EntranceBedFileName = "C380_ENTRY.rfa";

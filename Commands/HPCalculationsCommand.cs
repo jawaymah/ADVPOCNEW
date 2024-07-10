@@ -52,9 +52,11 @@ namespace AdvansysPOC.Commands
                 double rollerCenter = 0;
                 var memeberIds = detailedUnits[i].GetMemberIds();
                 int conveyorNumber = detailedUnits[i].LookupParameter(Constants.ConveyorNumber).AsInteger();
+                double driveSpeed = 0;
                 foreach (var memeberId in memeberIds)
                 {
                     Element e = Doc.GetElement(memeberId);
+                    string name = (e as FamilyInstance).Symbol.FamilyName;
                     if (e != null && e is FamilyInstance bed)
                     {
                         if (bed.Symbol.FamilyName != Constants.GenericFamilyName && bed.LookupParameter(Constants.Bed_Length) is Parameter lengthParameter)
@@ -62,10 +64,17 @@ namespace AdvansysPOC.Commands
                             detailedBeds.Add(bed);
                             length += lengthParameter.AsDouble();
                             rollerCenter = bed.LookupParameter(Constants.Roller_CenterToCenter).AsDouble() * 12;
+                        } 
+                        else if (bed.Symbol.FamilyName != Constants.GenericFamilyName && bed.LookupParameter(Constants.Drive_Speed) is Parameter speedParameter)
+                        {
+                            driveSpeed = speedParameter.AsDouble();
                         }
+
                     }
                 }
-                inputs.Add(new LiveRollerCalculationInputs { ConveyorNumber = conveyorNumber, Length = length, RollerCenters = rollerCenter });
+                LiveRollerCalculationInputs input = new LiveRollerCalculationInputs { ConveyorNumber = conveyorNumber, Length = length, RollerCenters = rollerCenter };
+                if (driveSpeed > 0) input.Speed = driveSpeed;
+                inputs.Add(input);
             }
             if (!CalculationsManager.DisplayLiveRollerCalculation(inputs))
             {
