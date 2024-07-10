@@ -37,6 +37,8 @@ namespace AdvansysPOC.Logic
             startPoint = cl.GetEndPoint(0);
             endPoint = cl.GetEndPoint(1);
             double oal = Math.Round(startPoint.DistanceTo(endPoint), 4);
+            //double oal = (int)(startPoint.DistanceTo(endPoint) * 12) / 12.0;
+
 
 
             int convWidth = (int)(12 * instance.Symbol.LookupParameter("Conveyor_OAW").AsDouble());
@@ -75,7 +77,7 @@ namespace AdvansysPOC.Logic
                 {
                     placedBeds.Add(bed.PlaceDrive(isLeftHand, unitId, elevation));
                 }
-                placedBeds.AddRange(bed.PlaceSupports(inst, unitId, elevation));
+                placedBeds.AddRange(bed.PlaceSupports(inst, unitId, elevation, convWidth));
 
             }
 
@@ -101,6 +103,7 @@ namespace AdvansysPOC.Logic
 
                 // Rules and formulas
             double oal = Math.Round(startpoint.DistanceTo(endpoint), 4);
+            //double oal = (int) (startpoint.DistanceTo(endpoint) * 12) / 12.0;
 
             //Entry...
             DetailedBed entryBed = new DetailedBed();
@@ -289,18 +292,6 @@ namespace AdvansysPOC.Logic
             string error = "";
             FamilySymbol symbol = FamilyHelper.getFamilySymbol(Constants.IntermediateFamilyName, Constants.IntermediateFamilyFileName, null, ref error);
             return FamilyHelper.placePointFamilyWithSubTransaction(symbol, startPoint, length);
-        }
-        public List<FamilyInstance> PlaceSupports(List<FamilyInstance> beds)
-        {
-            List<DetailedSupport> supports = new List<DetailedSupport>();
-            foreach (var item in beds)
-            {
-                XYZ loc = ((item.Location) as LocationPoint).Point;
-                DetailedSupport support = new DetailedSupport(item, loc);
-                support.setBelowFloor();
-                supports.Add(support);
-            }
-            return null;
         }
         public new FamilyInstance ConvertBackToGeneric(List<FamilyInstance> detailedFamilies)
         {

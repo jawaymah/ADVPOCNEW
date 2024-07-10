@@ -100,7 +100,7 @@ namespace AdvansysPOC.Logic
         }
 
 
-        public List<FamilyInstance> PlaceSupports(FamilyInstance parentBed, string unitId, double elevation)
+        public List<FamilyInstance> PlaceSupports(FamilyInstance parentBed, string unitId, double elevation, int width)
         {
             double conveyorIn = 2.5;
             if (parentBed != null)
@@ -121,7 +121,7 @@ namespace AdvansysPOC.Logic
             }
 
             List<FamilyInstance> supports = new List<FamilyInstance>();
-            FamilySymbol symbol = FamilyHelper.getFamilySymbolwithoutTransaction(familyName, fileName, null,0,  ref error);
+            FamilySymbol symbol = FamilyHelper.getFamilySymbolwithoutTransaction(familyName, fileName, null,width,  ref error);
             FamilyInstance insStart = FamilyHelper.placePointFamilyWithSubTransaction(symbol, StartPoint, Length);
             if (insStart != null)
             {
