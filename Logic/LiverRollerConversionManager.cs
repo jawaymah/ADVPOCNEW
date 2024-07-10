@@ -39,7 +39,13 @@ namespace AdvansysPOC.Logic
             double oal = Math.Round(startPoint.DistanceTo(endPoint), 4);
 
 
-            int convWidth =(int) (12 * instance.Symbol.LookupParameter("Conveyor_OAW").AsDouble());
+            int convWidth = (int)(12 * instance.Symbol.LookupParameter("Conveyor_OAW").AsDouble());
+            double elevation = instance.LookupParameter(Constants.Conveyor_Elevation_In).AsDouble();
+            //if (elevation != 2.5)
+            //{
+            //    startPoint += (elevation - 2.5) * XYZ.BasisZ;
+            //    endPoint += (elevation - 2.5) * XYZ.BasisZ;
+            //}
 
             bool driveInserted = false;
 
@@ -62,18 +68,18 @@ namespace AdvansysPOC.Logic
             List<FamilyInstance> placedBeds = new List<FamilyInstance>();
             foreach (var bed in bedsTobeInserted)
             {
-                FamilyInstance inst = bed.PlaceBed(convWidth, unitId);
+                FamilyInstance inst = bed.PlaceBed(convWidth, unitId, elevation, (double)zl);
                 placedBeds.Add(inst);
                 if (bed.HasDrive)
                 {
-                    placedBeds.Add(bed.PlaceDrive(isLeftHand, unitId));
+                    placedBeds.Add(bed.PlaceDrive(isLeftHand, unitId, elevation));
                 }
-                placedBeds.AddRange(bed.PlaceSupports(inst, unitId));
+                placedBeds.AddRange(bed.PlaceSupports(inst, unitId, elevation));
 
             }
 
             XYZ direction = (endPoint - startPoint).Normalize();
-            PlaceGuideRail(oal, startPoint, direction, ref placedBeds, convWidth, ref error);
+            PlaceGuideRail(oal, startPoint, direction, ref placedBeds, convWidth, elevation, ref error);
 
             //Rotate if needed
 
@@ -216,7 +222,7 @@ namespace AdvansysPOC.Logic
             return outBeds;
         }
 
-        public void PlaceGuideRail(double oal, XYZ startPoint, XYZ Direction, ref List<FamilyInstance> beds, int convWidth, ref string error)
+        public void PlaceGuideRail(double oal, XYZ startPoint, XYZ Direction, ref List<FamilyInstance> beds, int convWidth, double elevation, ref string error)
         {
             // Adding guiderails...
             FamilySymbol guideRailSymbol = FamilyHelper.getFamilySymbolwithoutTransaction(Constants.GuideRailFamilyName, Constants.GuideRailFamilyFileName, null, convWidth, ref error);
@@ -227,6 +233,7 @@ namespace AdvansysPOC.Logic
                 FamilyInstance inst = FamilyHelper.placePointFamilyWithSubTransaction(guideRailSymbol, startPoint + length*Direction, 10);
                 if (inst != null)
                     inst.RotateFamilyToDirection(Globals.Doc, Direction, startPoint + length * Direction);
+                inst.SetParameter(Constants.Conveyor_Elevation_In, elevation);
                 beds.Add(inst);
                 length += 10;
             }
@@ -235,6 +242,7 @@ namespace AdvansysPOC.Logic
                 FamilyInstance inst = FamilyHelper.placePointFamilyWithSubTransaction(guideRailSymbol, startPoint + length * Direction, oal % 10);
                 if (inst != null)
                     inst.RotateFamilyToDirection(Globals.Doc, Direction, startPoint + length * Direction);
+                inst.SetParameter(Constants.Conveyor_Elevation_In, elevation);
                 beds.Add(inst);
             }
                 

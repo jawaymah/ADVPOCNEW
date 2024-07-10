@@ -43,7 +43,7 @@ namespace AdvansysPOC.Helpers
                 p.Set(value);
         }
 
-        public static void SetParameter(this Element instance, string parameter, int value)
+        public static void SetParameter(this Element instance, string parameter, int value, bool integer=true)
         {
             Parameter p = instance.LookupParameter(parameter);
             if (p != null)

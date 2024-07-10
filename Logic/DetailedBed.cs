@@ -32,7 +32,7 @@ namespace AdvansysPOC.Logic
             //return EndPoint.DistanceTo(StartPoint);
         }
 
-        public FamilyInstance PlaceBed(int width, string unitId)
+        public FamilyInstance PlaceBed(int width, string unitId, double elevation, double zoneLength)
         {
             string error = "";
             string familyName = Constants.CTFFamilyName;
@@ -77,11 +77,13 @@ namespace AdvansysPOC.Logic
             {
                 ins.RotateFamilyToDirection(Globals.Doc, Direction, StartPoint);
                 ins.SetUnitId(unitId);
+                ins.SetParameter(Constants.Conveyor_Elevation_In, elevation);  
+                ins.SetParameter(Constants.Conveyor_ZoneLengthinBeds, zoneLength);
             }
             return ins;
         }
 
-        public FamilyInstance PlaceDrive(bool ConveyorHandLeft, string unitId)
+        public FamilyInstance PlaceDrive(bool ConveyorHandLeft, string unitId, double elevation)
         {
             string error = "";
             string familyName = Constants.DriveFamilyName;
@@ -92,12 +94,13 @@ namespace AdvansysPOC.Logic
             {
                 ins.RotateFamilyToDirection(Globals.Doc, Direction, StartPoint, ConveyorHandLeft);
                 ins.SetUnitId(unitId);
+                ins.SetParameter(Constants.Conveyor_Elevation_In, elevation);
             }
             return ins;
         }
 
 
-        public List<FamilyInstance> PlaceSupports(FamilyInstance parentBed, string unitId)
+        public List<FamilyInstance> PlaceSupports(FamilyInstance parentBed, string unitId, double elevation)
         {
             double conveyorIn = 2.5;
             if (parentBed != null)
@@ -111,6 +114,12 @@ namespace AdvansysPOC.Logic
             string error = "";
             string familyName = Constants.SupportFamilyName;
             string fileName = Constants.SupportFamilyFileName;
+            if(elevation > 10.5)
+            {
+                familyName = Constants.LongSupportFamilyName;
+                fileName = Constants.LongSupportFamilyFileName;
+            }
+
             List<FamilyInstance> supports = new List<FamilyInstance>();
             FamilySymbol symbol = FamilyHelper.getFamilySymbolwithoutTransaction(familyName, fileName, null,0,  ref error);
             FamilyInstance insStart = FamilyHelper.placePointFamilyWithSubTransaction(symbol, StartPoint, Length);
@@ -119,6 +128,7 @@ namespace AdvansysPOC.Logic
                 insStart.RotateFamilyToDirection(Globals.Doc, Direction, StartPoint);
                 insStart.SetTypeParameter(Constants.Conveyor_Elevation_In, conveyorIn);
                 insStart.SetUnitId(unitId);
+                insStart.SetParameter(Constants.Conveyor_Elevation_In, elevation);
             }
             supports.Add(insStart);
             if (BedType == BedType.ExitBed)
@@ -129,6 +139,7 @@ namespace AdvansysPOC.Logic
                     insEnd.RotateFamilyToDirection(Globals.Doc, Direction, GetEndPoint());
                     insEnd.SetTypeParameter(Constants.Conveyor_Elevation_In, conveyorIn);
                     insEnd.SetUnitId(unitId);
+                    insEnd.SetParameter(Constants.Conveyor_Elevation_In, elevation);
                 }
                 supports.Add(insEnd);
             }

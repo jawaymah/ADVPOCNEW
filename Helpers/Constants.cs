@@ -11,6 +11,8 @@ namespace AdvansysPOC
         public static string LastUnitId = "NextUnitId";
         public static string Conveyor_Elevation_In = "Conveyor_Elevation_In";
         public static string Conveyor_Envelop = "Load_Envelope";
+        public static string Conveyor_ZoneLength = "Zone_Length";
+        public static string Conveyor_ZoneLengthinBeds = "CLR_ZONES";
 
         public static string EntranceBedFamilyName = "C380_ENTRY";
         public static string EntranceBedFileName = "C380_ENTRY.rfa";
@@ -26,6 +28,8 @@ namespace AdvansysPOC
         public static string DriveFamilyFileName = "C370.rfa";
         public static string SupportFamilyFileName = "C2101.rfa";
         public static string SupportFamilyName = "C2101";
+        public static string LongSupportFamilyFileName = "C2201.rfa";
+        public static string LongSupportFamilyName = "C2201";
         public static string GuideRailFamilyFileName = "C2000.rfa";
         public static string GuideRailFamilyName = "C2000";
 
