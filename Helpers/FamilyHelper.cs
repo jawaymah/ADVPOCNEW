@@ -29,6 +29,10 @@ namespace AdvansysPOC.Helpers
 
             return null;
         }
+        public static void SetUnitId(this AssemblyInstance instance, int unitId)
+        {
+            ParametersHelper.SetUnitId(instance, unitId);
+        }
         public static void SetUnitId(this AssemblyInstance instance, string unitId)
         {
             ParametersHelper.SetUnitId(instance, unitId);

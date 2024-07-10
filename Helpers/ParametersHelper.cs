@@ -43,7 +43,7 @@ namespace AdvansysPOC.Helpers
                 p.Set(value);
         }
 
-        public static void SetParameter(this FamilyInstance instance, string parameter, int value)
+        public static void SetParameter(this Element instance, string parameter, int value)
         {
             Parameter p = instance.LookupParameter(parameter);
             if (p != null)
@@ -85,7 +85,14 @@ namespace AdvansysPOC.Helpers
 
         public static void setupProject(Document doc)
         {
-            CreateProjectParameter(doc, Constants.LastUnitId);
+            using (TransactionGroup tg = new TransactionGroup(doc))
+            {
+                tg.Start("setup project data");
+                CreateProjectParameter(doc, Constants.LastUnitId);
+                CreateAssemblyInstanceParameter(doc, Constants.ConveyorNumber);
+                tg.Commit();
+            }
+
         }
 
         public static void CreateProjectParameter(Document doc, string name)
@@ -114,7 +121,31 @@ namespace AdvansysPOC.Helpers
                 trans.Commit();
             }
         }
+        public static void CreateAssemblyInstanceParameter(Document doc, string name)
+        {
+            using (Transaction trans = new Transaction(doc))
+            {
+                // The name of the transaction was given as an argument
+                if (trans.Start("Create AssemblyInstance parameter") != TransactionStatus.Started) return;
 
+                Category materials = doc.Settings.Categories.get_Item(BuiltInCategory.OST_Assemblies);
+                CategorySet cats1 = doc.Application.Create.NewCategorySet();
+                cats1.Insert(materials);
+
+                // parameter type => text ParameterType.Text
+                //BuiltInParameterGroup.PG_IDENTITY_DATA
+                using (SubTransaction subTR = new SubTransaction(doc))
+                {
+                    subTR.Start();
+                    RawCreateProjectParameter(doc.Application, name, SpecTypeId.Int.Integer, true,
+    cats1, true);
+                    subTR.Commit();
+                }
+
+                doc.Regenerate();
+                trans.Commit();
+            }
+        }
         public static void RawCreateProjectParameter(Autodesk.Revit.ApplicationServices.Application app, string name,
             ForgeTypeId type, bool visible, CategorySet cats, bool inst)
         {
@@ -192,6 +223,10 @@ namespace AdvansysPOC.Helpers
         }
 
         public static void SetUnitId(AssemblyInstance instance, string unitId)
+        {
+            SetParameter(instance, Constants.ConveyorNumber, unitId);
+        }
+        public static void SetUnitId(AssemblyInstance instance, int unitId)
         {
             SetParameter(instance, Constants.ConveyorNumber, unitId);
         }

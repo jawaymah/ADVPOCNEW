@@ -4,6 +4,7 @@ using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -95,7 +96,7 @@ namespace AdvansysPOC
                         using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
                         {
                             tr.Start("add assemblies");
-                            addElementsToaSSEMBLY(detailed.Select(s => s.Id).ToList(), uId);
+                            addElementsToaSSEMBLY(detailed.Select(s => s.Id).ToList(), Convert.ToInt32(uId));
                             tr.Commit();
                         }
                         allmessage = addReportItem(allmessage, $"unit {uId}: Succeded!");
@@ -113,7 +114,7 @@ namespace AdvansysPOC
             allMessage += message;
             return allMessage;
         }
-        public void addElementsToaSSEMBLY(List<ElementId> elementIds, string unitId)
+        public void addElementsToaSSEMBLY(List<ElementId> elementIds, int unitId)
         {
             if (elementIds.Count > 0)
             {
