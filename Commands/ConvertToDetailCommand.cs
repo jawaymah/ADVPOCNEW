@@ -127,6 +127,7 @@ namespace AdvansysPOC
                 double length = 0;
                 double rollerCenter = 0;
                 var memeberIds = assemblyInstance.GetMemberIds();
+                double driveSpeed = 0;
                 int conveyorNumber = assemblyInstance.LookupParameter(Constants.ConveyorNumber).AsInteger();
                 foreach (var memeberId in memeberIds)
                 {
@@ -138,23 +139,28 @@ namespace AdvansysPOC
                             length += lengthParameter.AsDouble();
                             rollerCenter = bed.LookupParameter(Constants.Roller_CenterToCenter).AsDouble() * 12;
                         }
+                        if (bed.Symbol.FamilyName != Constants.GenericFamilyName && bed.LookupParameter(Constants.DriveBed_Speed) is Parameter speedParameter)
+                        {
+                            driveSpeed = speedParameter.AsDouble();
+                        }
                     }
+                    LiveRollerCalculationInputs input = new LiveRollerCalculationInputs { ConveyorNumber = conveyorNumber, Length = length, RollerCenters = rollerCenter };
+                    if (driveSpeed > 0) input.Speed = driveSpeed;
+                    LiveRollerCalculationResult res = CalculationsManager.GetLiveRollerCalculationResult(input);
+                    assemblyInstance.SetParameter("HP", (int)res.HP);
+                    assemblyInstance.SetParameter("Center_Drive", res.DriveSize);
+                    assemblyInstance.SetUnitId(unitId);
                 }
-                LiveRollerCalculationInputs input =new LiveRollerCalculationInputs { ConveyorNumber = conveyorNumber, Length = length, RollerCenters = rollerCenter };
-                LiveRollerCalculationResult res = CalculationsManager.GetLiveRollerCalculationResult(input);
-                assemblyInstance.SetParameter("HP", (int)res.HP);
-                assemblyInstance.SetParameter("Center_Drive", res.DriveSize);
-                assemblyInstance.SetUnitId(unitId);
+
+                //// Create the assembly instance
+                //AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, elementIds, getSpoolNamingCategory());
+
+                //if (assemblyInstance != null)
+                //{
+                //    // Optionally, you can set properties of the assembly instance
+                //    assemblyInstance.AssemblyTypeName = "Custom Assembly Type"; // Example of setting assembly type
+                //}
             }
-
-            //// Create the assembly instance
-            //AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, elementIds, getSpoolNamingCategory());
-
-            //if (assemblyInstance != null)
-            //{
-            //    // Optionally, you can set properties of the assembly instance
-            //    assemblyInstance.AssemblyTypeName = "Custom Assembly Type"; // Example of setting assembly type
-            //}
         }
 
         public static ElementId getSpoolNamingCategory()

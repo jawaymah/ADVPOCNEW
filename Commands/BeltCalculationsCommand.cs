@@ -50,6 +50,7 @@ namespace AdvansysPOC.Commands
             }
 
             List<LiveRollerCalculationInputs> inputs = new List<LiveRollerCalculationInputs>();
+            List<int> failedUnitIds = new List<int>();
             for (int i = 0; i < detailedUnits.Count; i++)
             {
                 double length = 0;
@@ -78,16 +79,26 @@ namespace AdvansysPOC.Commands
                 LiveRollerCalculationInputs input = new LiveRollerCalculationInputs { ConveyorNumber = conveyorNumber, Length = length, RollerCenters = rollerCenter };
                 if (driveSpeed > 0) input.Speed = driveSpeed;
                 LiveRollerCalculationResult res = CalculationsManager.GetLiveRollerCalculationResult(input);
-                using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
+                if (res.HP == 0)
                 {
-                    tr.Start("add assemblies");
-                    detailedUnits[i].SetParameter("HP", (int)res.HP);
-                    detailedUnits[i].SetParameter("CENTER_DRIVE", res.DriveSize);
-                    tr.Commit();
+                    failedUnitIds.Add(conveyorNumber);
                 }
-                //inputs.Add(input)/*;*/
+                else
+                {
+                    using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
+                    {
+                        tr.Start("add assemblies");
+                        detailedUnits[i].SetParameter("HP", (int)res.HP);
+                        detailedUnits[i].SetParameter("CENTER_DRIVE", res.DriveSize);
+                        tr.Commit();
+                    }
+                }
             }
-
+            if (failedUnitIds.Count > 0)
+            {
+                message = $"Couldn't calculate HP for units ({string.Join(',', failedUnitIds)}).\nPlease reconfigure the conveyor parameters to be able to calculate HP";
+                return Result.Failed;
+            }
             List<BeltCalculationInputs> beltInputs = new List<BeltCalculationInputs>();
             for (int i = 0; i < detailedUnits.Count; i++)
             {
