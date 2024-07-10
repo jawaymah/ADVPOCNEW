@@ -7,22 +7,22 @@
         mc:Ignorable="d"
         Title="Live Roller Calculations" Height="450" Width="1000">
 
-    <StackPanel x:Name="stackPanel" 
-                VerticalAlignment="Stretch"
-                HorizontalAlignment="Stretch"
-                >
-        <Button Content="Save image"
-                Width="200"
-                Padding="5"
-                Margin="0,10,0,20"
-                VerticalAlignment="Top"
-                Click="SaveButton_Click"
-                HorizontalAlignment="Center"
-                />
-        <Image x:Name="myImg"
-               Stretch="None"
-               VerticalAlignment="Center"
-               HorizontalAlignment="Center"
-               />
-    </StackPanel>
+    <ScrollViewer VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch"
+                  >
+        <StackPanel x:Name="stackPanel" 
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    CanVerticallyScroll="True"
+                    >
+            <Button Content="Save image(s)"
+                    Width="200"
+                    Padding="5"
+                    Margin="0,10,0,20"
+                    VerticalAlignment="Top"
+                    Click="SaveButton_Click"
+                    HorizontalAlignment="Center"
+                    />
+        </StackPanel>
+    </ScrollViewer>
 </Window>

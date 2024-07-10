@@ -90,6 +90,8 @@ namespace AdvansysPOC.Helpers
                 tg.Start("setup project data");
                 CreateProjectParameter(doc, Constants.LastUnitId);
                 CreateAssemblyInstanceParameter(doc, Constants.ConveyorNumber);
+                CreateAssemblyInstanceParameter(doc, "HP");
+                CreateAssemblyInstanceParameter(doc, "Center_Drive", SpecTypeId.String.Text);
                 tg.Commit();
             }
 
@@ -121,7 +123,7 @@ namespace AdvansysPOC.Helpers
                 trans.Commit();
             }
         }
-        public static void CreateAssemblyInstanceParameter(Document doc, string name)
+        public static void CreateAssemblyInstanceParameter(Document doc, string name, ForgeTypeId forgeTypeId=null)
         {
             using (Transaction trans = new Transaction(doc))
             {
@@ -131,13 +133,13 @@ namespace AdvansysPOC.Helpers
                 Category materials = doc.Settings.Categories.get_Item(BuiltInCategory.OST_Assemblies);
                 CategorySet cats1 = doc.Application.Create.NewCategorySet();
                 cats1.Insert(materials);
-
+                if (forgeTypeId == null) forgeTypeId = SpecTypeId.Int.Integer;
                 // parameter type => text ParameterType.Text
                 //BuiltInParameterGroup.PG_IDENTITY_DATA
                 using (SubTransaction subTR = new SubTransaction(doc))
                 {
                     subTR.Start();
-                    RawCreateProjectParameter(doc.Application, name, SpecTypeId.Int.Integer, true,
+                    RawCreateProjectParameter(doc.Application, name, forgeTypeId, true,
     cats1, true);
                     subTR.Commit();
                 }

@@ -12,7 +12,7 @@ using static AdvansysPOC.Logic.CalculationsManager;
 namespace AdvansysPOC.Commands
 {
     [Transaction(TransactionMode.Manual)]
-    internal class HPCalculationsCommand : IExternalCommand
+    internal class BeltCalculationsCommand : IExternalCommand
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
@@ -25,8 +25,8 @@ namespace AdvansysPOC.Commands
                 return Result.Failed;
             }
 
-            List<AssemblyInstance> detailedUnits = new List<AssemblyInstance>();
-            List<FamilyInstance> detailedBeds = new List<FamilyInstance>();
+            List<AssemblyInstance> detailedAssemblies = new List<AssemblyInstance>();
+            List<FamilyInstance> detailedFamilies = new List<FamilyInstance>();
             if (selection != null)
             {
                 var ids = selection.GetElementIds();
@@ -36,22 +36,24 @@ namespace AdvansysPOC.Commands
                     if (e != null && e is AssemblyInstance assembly)
                     {
                         if (assembly.AssemblyTypeName != Constants.GenericFamilyName)
-                            detailedUnits.Add(assembly);
+                            detailedAssemblies.Add(assembly);
                     }
                 }
             }
-            if (detailedUnits.Count == 0)
+            if (detailedAssemblies.Count == 0)
             {
                 message = "There are no Detailed family selected";
                 return Result.Failed;
             }
             List<LiveRollerCalculationInputs> inputs = new List<LiveRollerCalculationInputs>();
-            for (int i = 0; i < detailedUnits.Count; i++)
+            for (int i = 0; i < detailedAssemblies.Count; i++)
             {
-                double length = 0;
+                double interBedsLength = 0;
+                double bedWidth = 0;
                 double rollerCenter = 0;
-                var memeberIds = detailedUnits[i].GetMemberIds();
-                int conveyorNumber = detailedUnits[i].LookupParameter(Constants.ConveyorNumber).AsInteger();
+                double TE18Qty = 0, TE30Qty = 0, TE42QtY = 0;
+                var memeberIds = detailedAssemblies[i].GetMemberIds();
+                int conveyorNumber = detailedAssemblies[i].LookupParameter(Constants.Roller_CenterToCenter).AsInteger();
                 foreach (var memeberId in memeberIds)
                 {
                     Element e = Doc.GetElement(memeberId);
@@ -59,13 +61,37 @@ namespace AdvansysPOC.Commands
                     {
                         if (bed.Symbol.FamilyName != Constants.GenericFamilyName && bed.LookupParameter(Constants.Bed_Length) is Parameter lengthParameter)
                         {
-                            detailedBeds.Add(bed);
-                            length += lengthParameter.AsDouble();
-                            rollerCenter = bed.LookupParameter(Constants.Roller_CenterToCenter).AsDouble() * 12;
+                            bedWidth = bed.LookupParameter(Constants.Bed_Width).AsDouble();
+                            double bedLength = lengthParameter.AsDouble();
+                            if (bed.Symbol.FamilyName == Constants.EntranceBedFamilyName || bed.Symbol.FamilyName == Constants.ExitBedFamilyName)
+                            {
+                                switch (bedLength)
+                                {
+                                    case 18:
+                                        TE18Qty++;
+                                        break;
+                                    case 30:
+                                        TE30Qty++;
+                                        break;
+                                    case 42:
+                                        TE42QtY++;
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                interBedsLength += bedLength;
+                            }
+                            detailedFamilies.Add(bed);
                         }
                     }
                 }
-                inputs.Add(new LiveRollerCalculationInputs { ConveyorNumber = conveyorNumber, Length = length, RollerCenters = rollerCenter });
+                inputs.Add(new BeltCalculationsManager.BeltCalculationInputs
+                {
+                    ConveyorNumber = conveyorNumber,
+                    BedWidth = bedWidth,
+                    RollerCenters = rollerCenter
+                });
             }
             if (!CalculationsManager.DisplayLiveRollerCalculation(inputs))
             {
@@ -74,5 +100,7 @@ namespace AdvansysPOC.Commands
             }
             return Result.Succeeded;
         }
+
+
     }
 }

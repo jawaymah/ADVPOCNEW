@@ -16,11 +16,13 @@ namespace AdvansysPOC.Logic
 {
     internal static class CalculationsManager
     {
-        static HPCalculationsView _calculationsView;
         const string filename = "HPCALC.xlsx";
         static string filePath = new Uri(Path.Combine(UIConstants.FilsFolder, filename), UriKind.Absolute).AbsolutePath;
 
         #region Cells numbers
+        const int CONV_NUM_ROW = 12;
+        const string CONV_NUM_COLUMN = "C";
+
         const int DEFAULT_LIVE_LOAD_ROW = 7;
         const string DEFAULT_LIVE_LOAD_COLUMN = "E";
 
@@ -80,33 +82,32 @@ namespace AdvansysPOC.Logic
 
         #endregion
 
-        public static void AssignInputParameters(Excel.Worksheet xlWorkSheet, double length, double rollerCenters,
-                                                    double defaultLiveLoad = 25,
-                                                    double speed = 200,
-                                                    double liveLoadOveeride = 0,
-                                                    double slugLength = 0,
-                                                    string adjustablePressureConveyor = "N",
-                                                    double beltPullOfSlavedConveyor = 0,
-                                                    string directDrive = "Dodge")
+        //public static void AssignInputParameters(Excel.Worksheet xlWorkSheet, int conveyorNumber, double length, double rollerCenters,
+        //                                            double defaultLiveLoad = 25,
+        //                                            double speed = 200,
+        //                                            double liveLoadOveeride = 0,
+        //                                            double slugLength = 0,
+        //                                            string adjustablePressureConveyor = "N",
+        //                                            double beltPullOfSlavedConveyor = 0,
+        //                                            string directDrive = "Dodge")
+        public static void AssignInputParameters(Excel.Worksheet xlWorkSheet, LiveRollerCalculationInputs input)
         {
+            xlWorkSheet.Cells[CONV_NUM_ROW, CONV_NUM_COLUMN] = input.ConveyorNumber;
+            xlWorkSheet.Cells[DEFAULT_LIVE_LOAD_ROW, DEFAULT_LIVE_LOAD_COLUMN] = input.DefaultLiveLoad;
+            xlWorkSheet.Cells[LENGTH_ROW, LENGTH_COLUMN] = input.Length;
+            xlWorkSheet.Cells[SPEED_ROW, SPEED_COLUMN] = input.Speed;
+            xlWorkSheet.Cells[LIVE_LOAD_OVERRID_ROW, LIVE_LOAD_OVERRID_COLUMN] = input.LiveLoadOveride;
+            xlWorkSheet.Cells[ROLLER_CENTERS_ROW, ROLLER_CENTERS_COLUMN] = input.RollerCenters;
+            xlWorkSheet.Cells[SLUG_LENGTH_ROW, SLUG_LENGTH_COLUMN] = input.SlugLength;
 
-            xlWorkSheet.Cells[DEFAULT_LIVE_LOAD_ROW, DEFAULT_LIVE_LOAD_COLUMN] = defaultLiveLoad;
-            xlWorkSheet.Cells[LENGTH_ROW, LENGTH_COLUMN] = length;
-            xlWorkSheet.Cells[SPEED_ROW, SPEED_COLUMN] = speed;
-            xlWorkSheet.Cells[LIVE_LOAD_OVERRID_ROW, LIVE_LOAD_OVERRID_COLUMN] = liveLoadOveeride;
-            xlWorkSheet.Cells[ROLLER_CENTERS_ROW, ROLLER_CENTERS_COLUMN] = rollerCenters;
-            xlWorkSheet.Cells[SLUG_LENGTH_ROW, SLUG_LENGTH_COLUMN] = slugLength;
-
-            xlWorkSheet.Cells[ADJUSTABLE_PRESSURE_CONVEYOR_ROW, ADJUSTABLE_PRESSURE_CONVEYOR_COLUMN] = adjustablePressureConveyor;
-            xlWorkSheet.Cells[BELT_PULL_OF_SLAVED_CONVEYOR_ROW, BELT_PULL_OF_SLAVED_CONVEYOR_COLUMN] = beltPullOfSlavedConveyor;
-            xlWorkSheet.Cells[DIRECT_DRIVE_ROW, DIRECT_DRIVE_COLUMN] = directDrive;
+            xlWorkSheet.Cells[ADJUSTABLE_PRESSURE_CONVEYOR_ROW, ADJUSTABLE_PRESSURE_CONVEYOR_COLUMN] = input.AdjustablePressureConveyor;
+            xlWorkSheet.Cells[BELT_PULL_OF_SLAVED_CONVEYOR_ROW, BELT_PULL_OF_SLAVED_CONVEYOR_COLUMN] = input.BeltPullOfSlavedConveyor;
+            xlWorkSheet.Cells[DIRECT_DRIVE_ROW, DIRECT_DRIVE_COLUMN] = input.DirectDrive;
 
             xlWorkSheet.Calculate();
-
-
         }
 
-        public static LiveRollerCalculationResult GetLiveRollerCalculationResult(double length, double rollerCenters)
+        public static LiveRollerCalculationResult GetLiveRollerCalculationResult(LiveRollerCalculationInputs input)
         {
             LiveRollerCalculationResult result = new LiveRollerCalculationResult();
             Microsoft.Office.Interop.Excel.Application xlApp = null;
@@ -114,11 +115,10 @@ namespace AdvansysPOC.Logic
             try
             {
                 xlApp = new Microsoft.Office.Interop.Excel.Application();
-                //xlApp.Visible = true;
                 xlWorkBook = xlApp.Workbooks.Open(filePath);
 
                 Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(2);
-                AssignInputParameters(xlWorkSheet, length, rollerCenters);
+                AssignInputParameters(xlWorkSheet, input);
 
                 if (double.TryParse((xlWorkSheet.Cells[EBP_ROW, EBP_COLUMN] as Excel.Range).Text.ToString(), out double ebpValue))
                 {
@@ -140,8 +140,9 @@ namespace AdvansysPOC.Logic
                 {
                     result.ShortSpring = shortSpring;
                 }
-
-                result.DriveSize = (xlWorkSheet.Cells[DRIVE_SIZE_ROW, DRIVE_SIZE_COLUMN] as Excel.Range).Text.ToString();
+                string driveSize = (xlWorkSheet.Cells[DRIVE_SIZE_ROW, DRIVE_SIZE_COLUMN] as Excel.Range).Text.ToString();
+                if (!string.IsNullOrEmpty(driveSize)) driveSize = driveSize.Replace(" DIRECT DRIVE", "");
+                result.DriveSize = driveSize;
             }
             catch (Exception e)
             {
@@ -156,42 +157,102 @@ namespace AdvansysPOC.Logic
         }
 
 
-        public static void DisplayLiveRollerCalculation(double length, double rollerCenters)
+        public static bool DisplayLiveRollerCalculation(List<LiveRollerCalculationInputs> inputs)
         {
             Microsoft.Office.Interop.Excel.Application xlApp = null;
             Excel.Workbook xlWorkBook = null;
             try
             {
                 xlApp = new Microsoft.Office.Interop.Excel.Application();
-                //xlApp.Visible = true;
                 xlWorkBook = xlApp.Workbooks.Open(filePath);
 
                 Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(2);
-                AssignInputParameters(xlWorkSheet, 150, 2);
-                dynamic x = xlWorkSheet.Range[CALCULATION_RANGE].CopyPicture(XlPictureAppearance.xlScreen, XlCopyPictureFormat.xlBitmap);
-                bool b = System.Windows.Clipboard.ContainsImage();
-
-                Image image = System.Windows.Forms.Clipboard.GetImage();
-                if (_calculationsView != null && _calculationsView.IsVisible)
+                List<Image> images = new List<Image>();
+                for (int i = 0; i < inputs.Count; i++)
                 {
-                    _calculationsView.Hide();
-                    _calculationsView = null;
+                    AssignInputParameters(xlWorkSheet, inputs[i]);
+                    dynamic x = xlWorkSheet.Range[CALCULATION_RANGE].CopyPicture(XlPictureAppearance.xlScreen, XlCopyPictureFormat.xlBitmap);
+                    if (System.Windows.Clipboard.ContainsImage())
+                    {
+                        images.Add(System.Windows.Forms.Clipboard.GetImage());
+                    }
                 }
-                _calculationsView = new HPCalculationsView { Image =  image };
-                _calculationsView.AddImage(image);
-                _calculationsView.Show();
+                if (HPCalculationsView.Instance != null && HPCalculationsView.Instance.IsVisible)
+                {
+                    HPCalculationsView.Instance.Close();
+                }
+                HPCalculationsView calculationsView = new HPCalculationsView();
+                calculationsView.AddImages(images);
+                calculationsView.Show();
             }
             catch (Exception e)
             {
-
+                return false;
             }
             finally
             {
                 xlWorkBook.Close(SaveChanges: false);
                 xlApp.Quit();
             }
+            return true;
         }
 
+
+        /// <summary>
+        /// The inputs of the live roller drive calculation
+        /// </summary>
+        public class LiveRollerCalculationInputs
+        {
+            /// <summary>
+            /// Conveyor unit Number
+            /// </summary>
+            public int ConveyorNumber { get; set; }
+
+            /// <summary>
+            /// Conveyor length
+            /// </summary>
+            public double Length { get; set; }
+
+            /// <summary>
+            /// Distance between conveyor rollers centers
+            /// </summary>
+            public double RollerCenters { get; set; } = 3;
+
+            /// <summary>
+            /// Default live load
+            /// </summary>
+            public double DefaultLiveLoad { get; set; } = 25;
+
+            /// <summary>
+            /// Conveyor speed
+            /// </summary>
+            public double Speed { get; set; } = 200;
+
+            /// <summary>
+            /// Conveyor live load override
+            /// </summary>
+            public double LiveLoadOveride { get; set; } = 0;
+
+            /// <summary>
+            /// Conveyor slug length
+            /// </summary>
+            public double SlugLength { get; set; } = 0;
+
+            /// <summary>
+            /// Adjustable Pressure Conveyor
+            /// </summary>
+            public string AdjustablePressureConveyor { get; set; } = "N";
+
+            /// <summary>
+            /// Belt Pull Of Slaved Conveyor (Conveyor pulled by this conveyor)
+            /// </summary>
+            public double BeltPullOfSlavedConveyor { get; set; } = 0;
+
+            /// <summary>
+            /// Is conveyor Direct Drive?
+            /// </summary>
+            public string DirectDrive { get; set; } = "Dodge";
+        }
 
         /// <summary>
         /// The result of the live roller drive calculation

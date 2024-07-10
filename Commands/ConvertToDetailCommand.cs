@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Transactions;
 using System.Windows.Controls;
+using static AdvansysPOC.Logic.CalculationsManager;
 using static Autodesk.Revit.DB.SpecTypeId;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
@@ -27,7 +28,8 @@ namespace AdvansysPOC
             if (selection == null) return Result.Cancelled;
 
             List<FamilyInstance> genericFamilies = new List<FamilyInstance>();
-            if (selection != null) {
+            if (selection != null)
+            {
                 var ids = selection.GetElementIds();
                 foreach (var id in ids)
                 {
@@ -35,19 +37,20 @@ namespace AdvansysPOC
                     if (e != null && e is FamilyInstance)
                     {
                         //if ((e as FamilyInstance).Symbol.FamilyName == "Straight")
-                            genericFamilies.Add(e as FamilyInstance);
+                        genericFamilies.Add(e as FamilyInstance);
                     }
                 }
             }
-            if (genericFamilies.Count == 0) {
+            if (genericFamilies.Count == 0)
+            {
                 message = "There are no Generic family selected";
-                return Result.Failed; 
+                return Result.Failed;
             }
             LiverRollerConversionManager managner = new LiverRollerConversionManager();
 
             List<FamilyInstance> detailed = new List<FamilyInstance>();
             string allmessage = "Conversion Report: " + System.Environment.NewLine;
-            using(TransactionGroup group = new TransactionGroup(Doc))
+            using (TransactionGroup group = new TransactionGroup(Doc))
             {
                 group.Start("Converting to Detail");
                 foreach (var family in genericFamilies)
@@ -120,6 +123,27 @@ namespace AdvansysPOC
             {
                 ElementId categoryId = Globals.Doc.GetElement(elementIds[0]).Category.Id;
                 AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, elementIds, categoryId);
+
+                double length = 0;
+                double rollerCenter = 0;
+                var memeberIds = assemblyInstance.GetMemberIds();
+                int conveyorNumber = assemblyInstance.LookupParameter(Constants.ConveyorNumber).AsInteger();
+                foreach (var memeberId in memeberIds)
+                {
+                    Element e = Globals.Doc.GetElement(memeberId);
+                    if (e != null && e is FamilyInstance bed)
+                    {
+                        if (bed.Symbol.FamilyName != Constants.GenericFamilyName && bed.LookupParameter(Constants.Bed_Length) is Parameter lengthParameter)
+                        {
+                            length += lengthParameter.AsDouble();
+                            rollerCenter = bed.LookupParameter(Constants.Roller_CenterToCenter).AsDouble() * 12;
+                        }
+                    }
+                }
+                LiveRollerCalculationInputs input =new LiveRollerCalculationInputs { ConveyorNumber = conveyorNumber, Length = length, RollerCenters = rollerCenter };
+                LiveRollerCalculationResult res = CalculationsManager.GetLiveRollerCalculationResult(input);
+                assemblyInstance.SetParameter("HP", (int)res.HP);
+                assemblyInstance.SetParameter("Center_Drive", res.DriveSize);
                 assemblyInstance.SetUnitId(unitId);
             }
 

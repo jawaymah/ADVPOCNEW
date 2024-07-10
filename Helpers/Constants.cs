@@ -6,6 +6,7 @@ namespace AdvansysPOC
     public static class Constants
     {
         //Parameters
+        public const string GenericFamilyName = "Straight";
         public static string ConveyorNumber = "Conveyor_Number";
         public static string ConveyorHand = "Conveyor_Hand";
         public static string LastUnitId = "NextUnitId";
@@ -16,6 +17,7 @@ namespace AdvansysPOC
         public static string Bed_Length = "Bed_Length";
         public static string Bed_Width = "Bed_Width";
         public static string DriveBed_Speed = "CLR_SPEED_FPM";
+        public const string Roller_CenterToCenter = "CLR_ROLLER_CENTER";
 
         public static string EntranceBedFamilyName = "C380_ENTRY";
         public static string EntranceBedFileName = "C380_ENTRY.rfa";
