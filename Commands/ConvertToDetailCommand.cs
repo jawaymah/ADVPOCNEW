@@ -3,6 +3,7 @@ using AdvansysPOC.Logic;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -80,6 +81,11 @@ namespace AdvansysPOC
                         using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
                         {
                             tr.Start("Create Beds");
+                            FailureHandlingOptions options = tr.GetFailureHandlingOptions();
+                            WarningDiscard preproccessor = new WarningDiscard();
+                            options.SetFailuresPreprocessor(preproccessor);
+                            tr.SetFailureHandlingOptions(options);
+
                             detailed = managner.ConvertToDetailed(family);
                             Doc.Regenerate();
 

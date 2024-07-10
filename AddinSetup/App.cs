@@ -208,7 +208,7 @@ namespace AdvansysPOC
                 var sym3Convert = RevitUi.AddPushButtonData("Export To Sym3", typeof(Sym3ExportCommand), Resources.excelIcon32, typeof(DocumentAvailablility));
                 Autodesk.Revit.UI.RibbonItem sym3Button = panel.AddItem(sym3Convert);
 
-                var envelop = RevitUi.AddPushButtonData("Envelop \nShow/Hide", typeof(EnvelopShowHideCommand), Resources.filterIco, typeof(DocumentAvailablility));
+                var envelop = RevitUi.AddPushButtonData("Envelop \nShow/Hide", typeof(EnvelopShowHideCommand), Resources.filterIcoFilled, typeof(DocumentAvailablility));
                 Autodesk.Revit.UI.RibbonItem envelopButton = panel.AddItem(envelop);
             }
             if (panelName == "Supports")
