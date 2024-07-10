@@ -69,6 +69,7 @@ namespace AdvansysPOC.Logic
             foreach (var bed in bedsTobeInserted)
             {
                 FamilyInstance inst = bed.PlaceBed(convWidth, unitId, elevation, (double)zl);
+                XYZ pp = (inst.Location as LocationPoint).Point; 
                 placedBeds.Add(inst);
                 if (bed.HasDrive)
                 {
@@ -119,7 +120,7 @@ namespace AdvansysPOC.Logic
             DetailedBed brakeBed = new DetailedBed();
             brakeBed.Length = 12;
             brakeBed.BedType = BedType.Brake;
-            brakeBed.StartPoint = exitBed.StartPoint - (brakeBed.Length - 1) * direction;
+            brakeBed.StartPoint = exitBed.StartPoint - (12) * direction;
             brakeBed.Direction = direction;
 
             outBeds.Add(entryBed);
@@ -155,7 +156,7 @@ namespace AdvansysPOC.Logic
                 {
                     //This is the case when we need CTF C352 with length 6 ft beside 7 ft C351...
                     DetailedBed ctf351 = new DetailedBed();
-                    ctf351.Length = remainingLength - 6;
+                    ctf351.Length = (remainingLength - 6) % 12;
                     ctf351.BedType = BedType.C351CTF;
                     ctf351.StartPoint = entryBed.GetEndPoint();
                     ctf351.Direction = direction;
@@ -168,7 +169,7 @@ namespace AdvansysPOC.Logic
                     ctf352.Direction = direction;
 
 
-                    remainingLength -= 13;
+                    remainingLength -= (6 + ctf351.Length);
 
                     outBeds.Add(ctf351);
                     outBeds.Add(ctf352);
