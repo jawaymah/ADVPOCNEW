@@ -88,8 +88,8 @@ namespace AdvansysPOC.Commands
                     using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
                     {
                         tr.Start("add assemblies");
-                        detailedUnits[i].SetParameter("HP", (int)res.HP);
-                        detailedUnits[i].SetParameter("CENTER_DRIVE", res.DriveSize);
+                        detailedUnits[i].SetParameter(Constants.HP, (int)res.HP);
+                        detailedUnits[i].SetParameter(Constants.Center_Drive, res.DriveSize);
                         tr.Commit();
                     }
                 }
