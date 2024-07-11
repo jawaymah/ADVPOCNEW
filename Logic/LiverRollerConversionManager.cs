@@ -155,7 +155,7 @@ namespace AdvansysPOC.Logic
             {
                 int full352Count = (int) remainingLength / 12;
                 XYZ lastPoint = new XYZ();
-                if (remainingLength % 12 > 0 && full352Count > 0)
+                if (remainingLength % 12 > 0 && remainingLength % 12 < 2 && full352Count > 0)
                 {
                     //This is the case when we need CTF C352 with length 6 ft beside 7 ft C351...
                     DetailedBed ctf351 = new DetailedBed();
