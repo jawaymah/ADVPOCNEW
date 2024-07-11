@@ -23,12 +23,12 @@ namespace AdvansysPOC
     class App : IExternalApplication
     {
 
-        protected string ManagerPanelName => "Advnasys Manager";
+        protected string ManagerPanelName => "Daifuku Manager";
         private static DockablePaneId FabricationManagerPaneId { get; } = new DockablePaneId(new Guid("DB7FB22A-A5E5-4344-8009-048CCFEE679A"));
         FabricationManagerView FabricationManagerView;
         public Result OnStartup(UIControlledApplication a)
         {
-            string tabName = "Advansys";
+            string tabName = "Daifuku";
             try
             {
                 // Create a custom tab
