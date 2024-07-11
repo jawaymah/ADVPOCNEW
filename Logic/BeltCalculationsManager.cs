@@ -74,6 +74,8 @@ namespace AdvansysPOC.Logic
         {
 
             xlWorkSheet.Cells[Unit_NUMBER_ROW, Unit_NUMBER_COLUMN] = inputs.ConveyorNumber;
+                
+                ;
             xlWorkSheet.Cells[BED_WIDTH_ROW, BED_WIDTH_COLUMN] = inputs.BedWidth;
             xlWorkSheet.Cells[CONVEYOR_TYPE_ROW, CONVEYOR_TYPE_COLUMN] = inputs.ConveyorType;
 

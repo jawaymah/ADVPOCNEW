@@ -83,7 +83,7 @@ namespace AdvansysPOC.Logic
             return ins;
         }
 
-        public FamilyInstance PlaceDrive(bool ConveyorHandLeft, string unitId, double elevation)
+        public FamilyInstance PlaceDrive(bool ConveyorHandLeft, string unitId, double elevation, double speed)
         {
             string error = "";
             string familyName = Constants.DriveFamilyName;
@@ -95,6 +95,7 @@ namespace AdvansysPOC.Logic
                 ins.RotateFamilyToDirection(Globals.Doc, Direction, StartPoint, ConveyorHandLeft);
                 ins.SetUnitId(unitId);
                 ins.SetParameter(Constants.Conveyor_Elevation_In, elevation);
+                ins.SetParameter(Constants.DriveBed_Speed, speed);
             }
             return ins;
         }

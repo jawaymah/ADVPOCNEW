@@ -39,9 +39,15 @@ namespace AdvansysPOC.Logic
             double oal = Math.Round(startPoint.DistanceTo(endPoint), 4);
             //double oal = (int)(startPoint.DistanceTo(endPoint) * 12) / 12.0;
 
+            // Get guardrail height...
+            double grHeight = instance.LookupParameter("GR_Height").AsDouble();
+
+            // Get speed...
+            double speed = instance.LookupParameter("CLR_SPEED_FPM").AsDouble();
 
 
             int convWidth = (int)(12 * instance.Symbol.LookupParameter("Conveyor_OAW").AsDouble());
+            double convWidthFeet = instance.Symbol.LookupParameter("Conveyor_OAW").AsDouble();
             double elevation = instance.LookupParameter(Constants.Conveyor_Elevation_In).AsDouble();
             //if (elevation != 2.5)
             //{
@@ -75,14 +81,14 @@ namespace AdvansysPOC.Logic
                 placedBeds.Add(inst);
                 if (bed.HasDrive)
                 {
-                    placedBeds.Add(bed.PlaceDrive(isLeftHand, unitId, elevation));
+                    placedBeds.Add(bed.PlaceDrive(isLeftHand, unitId, elevation, speed));
                 }
                 placedBeds.AddRange(bed.PlaceSupports(inst, unitId, elevation, convWidth));
 
             }
 
             XYZ direction = (endPoint - startPoint).Normalize();
-            PlaceGuideRail(oal, startPoint, direction, ref placedBeds, convWidth, elevation, ref error);
+            PlaceGuideRail(oal, grHeight, startPoint, direction, ref placedBeds, convWidth, elevation, ref error);
 
             //Rotate if needed
 
@@ -227,7 +233,7 @@ namespace AdvansysPOC.Logic
             return outBeds;
         }
 
-        public void PlaceGuideRail(double oal, XYZ startPoint, XYZ Direction, ref List<FamilyInstance> beds, int convWidth, double elevation, ref string error)
+        public void PlaceGuideRail(double oal, double grHeight,XYZ startPoint, XYZ Direction, ref List<FamilyInstance> beds, int convWidth, double elevation, ref string error)
         {
             // Adding guiderails...
             FamilySymbol guideRailSymbol = FamilyHelper.getFamilySymbolwithoutTransaction(Constants.GuideRailFamilyName, Constants.GuideRailFamilyFileName, null, convWidth, ref error);
@@ -239,6 +245,7 @@ namespace AdvansysPOC.Logic
                 if (inst != null)
                     inst.RotateFamilyToDirection(Globals.Doc, Direction, startPoint + length * Direction);
                 inst.SetParameter(Constants.Conveyor_Elevation_In, elevation);
+                inst.SetParameter(Constants.GR_Height, grHeight);
                 beds.Add(inst);
                 length += 10;
             }

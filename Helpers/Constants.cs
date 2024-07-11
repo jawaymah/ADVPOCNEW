@@ -21,6 +21,7 @@ namespace AdvansysPOC
         public const string Drive_Speed = "CLR_SPEED_FPM";
         public const string Center_Drive = "Center_Drive";
         public const string HP = "HP";
+        public const string GR_Height = "GR_HEIGHT";
 
 
         public static string EntranceBedFamilyName = "C380_ENTRY";

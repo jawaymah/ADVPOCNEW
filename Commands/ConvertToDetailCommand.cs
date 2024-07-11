@@ -126,6 +126,8 @@ namespace AdvansysPOC
 
                 double length = 0;
                 double rollerCenter = 0;
+                double width = 0;
+                double zoneLength = 0;
                 var memeberIds = assemblyInstance.GetMemberIds();
                 double driveSpeed = 0;
                 foreach (var memeberId in memeberIds)
@@ -136,6 +138,8 @@ namespace AdvansysPOC
                         if (bed.Symbol.FamilyName != Constants.GenericFamilyName && bed.LookupParameter(Constants.Bed_Length) is Parameter lengthParameter)
                         {
                             length += lengthParameter.AsDouble();
+                            width = bed.LookupParameter("Bed_Width").AsDouble();
+                            zoneLength = bed.LookupParameter("CLR_ZONES").AsDouble();
                             rollerCenter = bed.LookupParameter(Constants.Roller_CenterToCenter).AsDouble() * 12;
                         }
                         if (bed.Symbol.FamilyName != Constants.GenericFamilyName && bed.LookupParameter(Constants.DriveBed_Speed) is Parameter speedParameter)
@@ -148,8 +152,14 @@ namespace AdvansysPOC
                     Tuple<LiveRollerCalculationResult, string> res = CalculationsManager.GetLiveRollerCalculationResult(input);
                     assemblyInstance.SetParameter(Constants.HP, (int)res.Item1.HP);
                     assemblyInstance.SetParameter(Constants.Center_Drive, res.Item1.DriveSize);
+
                     assemblyInstance.SetUnitId(unitId);
                 }
+
+                assemblyInstance.SetParameter("Speed", driveSpeed.ToString());
+                assemblyInstance.SetParameter("Conveyor OAL", length);
+                assemblyInstance.SetParameter("Conveyor Width", width);
+                assemblyInstance.SetParameter("Zone Length", zoneLength);
 
                 //// Create the assembly instance
                 //AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, elementIds, getSpoolNamingCategory());

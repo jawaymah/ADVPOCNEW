@@ -42,6 +42,13 @@ namespace AdvansysPOC.Helpers
             if (p != null)
                 p.Set(value);
         }
+        
+        public static void SetParameter(this AssemblyInstance instance, string parameter, double value)
+        {
+            Parameter p = instance.LookupParameter(parameter);
+            if (p != null)
+                p.Set(value);
+        }
 
         public static void SetParameter(this Element instance, string parameter, int value, bool integer=true)
         {
@@ -92,6 +99,11 @@ namespace AdvansysPOC.Helpers
                 CreateAssemblyInstanceParameter(doc, Constants.ConveyorNumber);
                 CreateAssemblyInstanceParameter(doc, "HP");
                 CreateAssemblyInstanceParameter(doc, "Center_Drive", SpecTypeId.String.Text);
+                CreateAssemblyInstanceParameter(doc, "Speed", SpecTypeId.String.Text);
+                CreateAssemblyInstanceParameter(doc, "Conveyor OAL", SpecTypeId.Length);
+                CreateAssemblyInstanceParameter(doc, "Conveyor Width", SpecTypeId.Length);
+                CreateAssemblyInstanceParameter(doc, "Zone Length", SpecTypeId.Length);
+
                 tg.Commit();
             }
 
