@@ -6,6 +6,7 @@ using Autodesk.Revit.UI;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Transactions;
@@ -130,6 +131,7 @@ namespace AdvansysPOC
                 double zoneLength = 0;
                 var memeberIds = assemblyInstance.GetMemberIds();
                 double driveSpeed = 0;
+                Stopwatch sw = Stopwatch.StartNew();
                 foreach (var memeberId in memeberIds)
                 {
                     Element e = Globals.Doc.GetElement(memeberId);
@@ -147,14 +149,16 @@ namespace AdvansysPOC
                             driveSpeed = speedParameter.AsDouble();
                         }
                     }
-                    LiveRollerCalculationInputs input = new LiveRollerCalculationInputs { ConveyorNumber = unitId, Length = length, RollerCenters = rollerCenter };
-                    if (driveSpeed > 0) input.Speed = driveSpeed;
-                    Tuple<LiveRollerCalculationResult, string> res = CalculationsManager.GetLiveRollerCalculationResult(input);
-                    assemblyInstance.SetParameter(Constants.HP, (int)res.Item1.HP);
-                    assemblyInstance.SetParameter(Constants.Center_Drive, res.Item1.DriveSize);
-
-                    assemblyInstance.SetUnitId(unitId);
                 }
+
+                LiveRollerCalculationInputs input = new LiveRollerCalculationInputs { ConveyorNumber = unitId, Length = length, RollerCenters = rollerCenter };
+                if (driveSpeed > 0) input.Speed = driveSpeed;
+                Tuple<LiveRollerCalculationResult, string> res = CalculationsManager.GetLiveRollerCalculationResult(input);
+                assemblyInstance.SetParameter(Constants.HP, (int)res.Item1.HP);
+                assemblyInstance.SetParameter(Constants.Center_Drive, res.Item1.DriveSize);
+
+                assemblyInstance.SetUnitId(unitId);
+                long et = sw.ElapsedMilliseconds;
 
                 assemblyInstance.SetParameter("Speed", driveSpeed.ToString());
                 assemblyInstance.SetParameter("Conveyor OAL", length);
