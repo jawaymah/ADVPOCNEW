@@ -54,7 +54,7 @@ namespace AdvansysPOC.Logic
                 }
                 if (name == Constants.DriveFamilyName)
                 {
-                    Parameter p = inst.LookupParameter(Constants.DriveBed_Speed);
+                    Parameter p = inst.LookupParameter(Constants.Drive_Speed);
                     if (p != null)
                     {
                         Speed = p.AsValueString();

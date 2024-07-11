@@ -32,6 +32,7 @@ namespace AdvansysPOC.Helpers
                     if (family.Symbol.FamilyName == "Straight")
                     {
                         family.SetUnitId();
+                        family.SetParameter(Constants.Drive_Speed, 200.0);
                     }
                 }
             }

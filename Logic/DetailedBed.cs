@@ -95,7 +95,7 @@ namespace AdvansysPOC.Logic
                 ins.RotateFamilyToDirection(Globals.Doc, Direction, StartPoint, ConveyorHandLeft);
                 ins.SetUnitId(unitId);
                 ins.SetParameter(Constants.Conveyor_Elevation_In, elevation);
-                ins.SetParameter(Constants.DriveBed_Speed, speed);
+                ins.SetParameter(Constants.Drive_Speed, speed);
             }
             return ins;
         }

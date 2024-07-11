@@ -144,7 +144,7 @@ namespace AdvansysPOC
                             zoneLength = bed.LookupParameter("CLR_ZONES").AsDouble();
                             rollerCenter = bed.LookupParameter(Constants.Roller_CenterToCenter).AsDouble() * 12;
                         }
-                        if (bed.Symbol.FamilyName != Constants.GenericFamilyName && bed.LookupParameter(Constants.DriveBed_Speed) is Parameter speedParameter)
+                        if (bed.Symbol.FamilyName != Constants.GenericFamilyName && bed.LookupParameter(Constants.Drive_Speed) is Parameter speedParameter)
                         {
                             driveSpeed = speedParameter.AsDouble();
                         }

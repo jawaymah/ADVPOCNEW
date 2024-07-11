@@ -16,7 +16,7 @@ namespace AdvansysPOC
         public static string Conveyor_ZoneLengthinBeds = "CLR_ZONES";
         public static string Bed_Length = "Bed_Length";
         public static string Bed_Width = "Bed_Width";
-        public static string DriveBed_Speed = "CLR_SPEED_FPM";
+        //public static string DriveBed_Speed = "CLR_SPEED_FPM";
         public const string Roller_CenterToCenter = "CLR_ROLLER_CENTER";
         public const string Drive_Speed = "CLR_SPEED_FPM";
         public const string Center_Drive = "Center_Drive";
