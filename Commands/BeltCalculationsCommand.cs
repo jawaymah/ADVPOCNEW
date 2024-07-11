@@ -78,8 +78,13 @@ namespace AdvansysPOC.Commands
                 }
                 LiveRollerCalculationInputs input = new LiveRollerCalculationInputs { ConveyorNumber = conveyorNumber, Length = length, RollerCenters = rollerCenter };
                 if (driveSpeed > 0) input.Speed = driveSpeed;
-                LiveRollerCalculationResult res = CalculationsManager.GetLiveRollerCalculationResult(input);
-                if (res.HP == 0)
+                Tuple<LiveRollerCalculationResult, string> res = CalculationsManager.GetLiveRollerCalculationResult(input);
+                if (!string.IsNullOrEmpty(res.Item2))
+                {
+                    message = res.Item2;
+                    return Result.Failed;
+                }
+                if (res.Item1.HP == 0)
                 {
                     failedUnitIds.Add(conveyorNumber);
                 }
@@ -88,8 +93,8 @@ namespace AdvansysPOC.Commands
                     using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
                     {
                         tr.Start("add assemblies");
-                        detailedUnits[i].SetParameter(Constants.HP, (int)res.HP);
-                        detailedUnits[i].SetParameter(Constants.Center_Drive, res.DriveSize);
+                        detailedUnits[i].SetParameter(Constants.HP, (int)res.Item1.HP);
+                        detailedUnits[i].SetParameter(Constants.Center_Drive, res.Item1.DriveSize);
                         tr.Commit();
                     }
                 }
@@ -169,9 +174,10 @@ namespace AdvansysPOC.Commands
                     InterBedsLength = interBedsLength
                 });
             }
-            if (!BeltCalculationsManager.DisplayBeltCalculation(beltInputs))
+            string error = BeltCalculationsManager.DisplayBeltCalculation(beltInputs);
+            if (!string.IsNullOrEmpty(error))
             {
-                message = "Something went wrong";
+                message = error;
                 return Result.Failed;
             }
             return Result.Succeeded;

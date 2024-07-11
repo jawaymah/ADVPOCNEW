@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TemplateRevitCs", "Template
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "AdvansysPOCSetup", "..\AdvansysPOCSetup\AdvansysPOCSetup.vdproj", "{F2F6C2C4-9DE2-4CEA-AA68-06D563464B58}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "AddinSetup", "..\AddinSetup\AddinSetup.vdproj", "{F65C258F-EDFF-4903-8BAF-06FDB3735D48}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,8 @@ Global
 		{4122F0F0-9EE5-4DFB-965F-3FC70B82E61D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F2F6C2C4-9DE2-4CEA-AA68-06D563464B58}.Debug|Any CPU.ActiveCfg = Debug
 		{F2F6C2C4-9DE2-4CEA-AA68-06D563464B58}.Release|Any CPU.ActiveCfg = Release
+		{F65C258F-EDFF-4903-8BAF-06FDB3735D48}.Debug|Any CPU.ActiveCfg = Debug
+		{F65C258F-EDFF-4903-8BAF-06FDB3735D48}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

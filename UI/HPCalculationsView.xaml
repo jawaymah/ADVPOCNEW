@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AdvansysPOC.UI"
         mc:Ignorable="d"
-        Title="Live Roller Calculations" Height="450" Width="1000">
+        Title="Live Roller Calculations" >
 
     <ScrollViewer VerticalAlignment="Stretch"
                   HorizontalAlignment="Stretch"

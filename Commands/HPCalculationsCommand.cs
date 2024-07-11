@@ -69,16 +69,16 @@ namespace AdvansysPOC.Commands
                         {
                             driveSpeed = speedParameter.AsDouble();
                         }
-
                     }
                 }
                 LiveRollerCalculationInputs input = new LiveRollerCalculationInputs { ConveyorNumber = conveyorNumber, Length = length, RollerCenters = rollerCenter };
                 if (driveSpeed > 0) input.Speed = driveSpeed;
                 inputs.Add(input);
             }
-            if (!CalculationsManager.DisplayLiveRollerCalculation(inputs))
+            string error = CalculationsManager.DisplayLiveRollerCalculation(inputs);
+            if (!string.IsNullOrEmpty(error))
             {
-                message = "Something went wrong";
+                message = error;
                 return Result.Failed;
             }
             return Result.Succeeded;

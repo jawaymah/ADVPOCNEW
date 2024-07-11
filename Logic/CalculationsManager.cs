@@ -107,8 +107,9 @@ namespace AdvansysPOC.Logic
             xlWorkSheet.Calculate();
         }
 
-        public static LiveRollerCalculationResult GetLiveRollerCalculationResult(LiveRollerCalculationInputs input)
+        public static Tuple<LiveRollerCalculationResult, string> GetLiveRollerCalculationResult(LiveRollerCalculationInputs input)
         {
+            string errorMessage = null;
             LiveRollerCalculationResult result = new LiveRollerCalculationResult();
             Microsoft.Office.Interop.Excel.Application xlApp = null;
             Excel.Workbook xlWorkBook = null;
@@ -146,18 +147,24 @@ namespace AdvansysPOC.Logic
             }
             catch (Exception e)
             {
-
+                errorMessage = e.Message;
             }
             finally
             {
-                xlWorkBook.Close(SaveChanges: false);
-                xlApp.Quit();
+                if (xlWorkBook != null)
+                {
+                    xlWorkBook.Close(SaveChanges: false);
+                }
+                if (xlApp != null)
+                {
+                    xlApp.Quit();
+                }
             }
-            return result;
+            return Tuple.Create<LiveRollerCalculationResult, string>(result, errorMessage);
         }
 
 
-        public static bool DisplayLiveRollerCalculation(List<LiveRollerCalculationInputs> inputs)
+        public static string DisplayLiveRollerCalculation(List<LiveRollerCalculationInputs> inputs)
         {
             Microsoft.Office.Interop.Excel.Application xlApp = null;
             Excel.Workbook xlWorkBook = null;
@@ -187,14 +194,16 @@ namespace AdvansysPOC.Logic
             }
             catch (Exception e)
             {
-                return false;
+                return e.Message;
             }
             finally
             {
-                xlWorkBook.Close(SaveChanges: false);
-                xlApp.Quit();
+                if (xlWorkBook != null)
+                    xlWorkBook.Close(SaveChanges: false);
+                if (xlApp != null)
+                    xlApp.Quit();
             }
-            return true;
+            return null;
         }
 
 

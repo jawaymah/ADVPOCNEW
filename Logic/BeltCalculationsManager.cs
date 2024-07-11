@@ -89,8 +89,6 @@ namespace AdvansysPOC.Logic
             xlWorkSheet.Cells[EXTRALENGTH_ROW, EXTRA_LENGTH_COLUMN] = inputs.ExtraLength;
 
             xlWorkSheet.Calculate();
-
-
         }
 
         //public static LiveRollerCalculationResult GetLiveRollerCalculationResult(double length, double rollerCenters)
@@ -142,7 +140,7 @@ namespace AdvansysPOC.Logic
         //}
 
 
-        public static bool DisplayBeltCalculation(List<BeltCalculationInputs> inputs)
+        public static string DisplayBeltCalculation(List<BeltCalculationInputs> inputs)
         {
             Microsoft.Office.Interop.Excel.Application xlApp = null;
             Excel.Workbook xlWorkBook = null;
@@ -166,20 +164,22 @@ namespace AdvansysPOC.Logic
                 {
                     HPCalculationsView.Instance.Close();
                 }
-                HPCalculationsView calculationsView = new HPCalculationsView();
+                HPCalculationsView calculationsView = new HPCalculationsView(450,650);
                 calculationsView.AddImages(images);
                 calculationsView.Show();
             }
             catch (Exception e)
             {
-                return false;
+                return e.Message;
             }
             finally
             {
-                xlWorkBook.Close(SaveChanges: false);
-                xlApp.Quit();
+                if (xlWorkBook != null)
+                    xlWorkBook.Close(SaveChanges: false);
+                if (xlApp != null)
+                    xlApp.Quit();
             }
-            return true;
+            return null;
         }
 
 

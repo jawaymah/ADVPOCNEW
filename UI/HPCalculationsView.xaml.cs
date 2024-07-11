@@ -24,8 +24,10 @@ namespace AdvansysPOC.UI
     {
         public static HPCalculationsView Instance { get; private set; }
         public List<System.Drawing.Image> Images { get; set; }
-        public HPCalculationsView()
+        public HPCalculationsView(int width = 1000, int height = 450)
         {
+            Width = width;
+            Height = height;
             InitializeComponent();
             Instance = this;
         }
