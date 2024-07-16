@@ -140,7 +140,7 @@ namespace AdvansysPOC.Commands
                             double bedLength = lengthParameter.AsDouble();
                             if (bed.Symbol.FamilyName == Constants.EntranceBedFamilyName || bed.Symbol.FamilyName == Constants.ExitBedFamilyName)
                             {
-                                switch (bedLength)
+                                switch (bedLength*12) // Convert to inches
                                 {
                                     case 18:
                                         TE18Qty++;
