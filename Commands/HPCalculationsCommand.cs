@@ -87,9 +87,9 @@ namespace AdvansysPOC.Commands
                 tr.Start("HP calculations");
                 for (int i = 0; i < detailedUnits.Count; i++)
                 {
-                    detailedUnits[i].SetParameter(Constants.HP, (int)res.Item1[i].HP);
+                    detailedUnits[i].SetParameter(Constants.HP, res.Item1[i].HP);
                     detailedUnits[i].SetParameter(Constants.Center_Drive, res.Item1[i].DriveSize);
-                    detailedUnits[i].SetParameter(Constants.Conveyor_Speed, (int)inputs[i].Speed);
+                    detailedUnits[i].SetParameter(Constants.Conveyor_Speed, inputs[i].Speed.ToString());
                 }
                 tr.Commit();
             }

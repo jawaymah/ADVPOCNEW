@@ -154,7 +154,7 @@ namespace AdvansysPOC
                 LiveRollerCalculationInputs input = new LiveRollerCalculationInputs { ConveyorNumber = unitId, Length = length, RollerCenters = rollerCenter };
                 if (driveSpeed > 0) input.Speed = driveSpeed;
                 Tuple<LiveRollerCalculationResult, string> res = CalculationsManager.GetLiveRollerCalculationResult(input);
-                assemblyInstance.SetParameter(Constants.HP, (int)res.Item1.HP);
+                assemblyInstance.SetParameter(Constants.HP, res.Item1.HP);
                 assemblyInstance.SetParameter(Constants.Center_Drive, res.Item1.DriveSize);
 
                 assemblyInstance.SetUnitId(unitId);

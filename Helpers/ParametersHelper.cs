@@ -99,7 +99,7 @@ namespace AdvansysPOC.Helpers
                 tg.Start("setup project data");
                 CreateProjectParameter(doc, Constants.LastUnitId);
                 CreateAssemblyInstanceParameter(doc, Constants.ConveyorNumber);
-                CreateAssemblyInstanceParameter(doc, "HP");
+                CreateAssemblyInstanceParameter(doc, "HP", SpecTypeId.Number);
                 CreateAssemblyInstanceParameter(doc, "Center_Drive", SpecTypeId.String.Text);
                 CreateAssemblyInstanceParameter(doc, "Speed", SpecTypeId.String.Text);
                 CreateAssemblyInstanceParameter(doc, "Conveyor OAL", SpecTypeId.Length);
