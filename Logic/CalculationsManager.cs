@@ -107,10 +107,38 @@ namespace AdvansysPOC.Logic
             xlWorkSheet.Calculate();
         }
 
+        static LiveRollerCalculationResult GetResults(Excel.Worksheet xlWorkSheet)
+        {
+            LiveRollerCalculationResult result = new LiveRollerCalculationResult();
+            if (double.TryParse((xlWorkSheet.Cells[EBP_ROW, EBP_COLUMN] as Excel.Range).Text.ToString(), out double ebpValue))
+            {
+                result.EBP = ebpValue;
+            }
+
+            string HPString = (xlWorkSheet.Cells[HP_ROW, HP_COLUMN] as Excel.Range).Text.ToString();
+            if (!string.IsNullOrEmpty(HPString) && HPString.Contains(" HP"))
+            {
+                result.HP = double.Parse(HPString.Replace("HP", "").TrimEnd());
+            }
+
+            if (int.TryParse((xlWorkSheet.Cells[LONG_SPRING_ROW, LONG_SPRING_COLUMN] as Excel.Range).Text.ToString(), out int longSpring))
+            {
+                result.LongSpring = longSpring;
+            }
+
+            if (int.TryParse((xlWorkSheet.Cells[SHORT_SPRING_ROW, SHORT_SPRING_COLUMN] as Excel.Range).Text.ToString(), out int shortSpring))
+            {
+                result.ShortSpring = shortSpring;
+            }
+            string driveSize = (xlWorkSheet.Cells[DRIVE_SIZE_ROW, DRIVE_SIZE_COLUMN] as Excel.Range).Text.ToString();
+            if (!string.IsNullOrEmpty(driveSize)) result.DriveSize = driveSize.Replace(" DIRECT DRIVE", "");
+            return result;
+        }
+
         public static Tuple<LiveRollerCalculationResult, string> GetLiveRollerCalculationResult(LiveRollerCalculationInputs input)
         {
             string errorMessage = null;
-            LiveRollerCalculationResult result = new LiveRollerCalculationResult();
+            LiveRollerCalculationResult result = null;
             Microsoft.Office.Interop.Excel.Application xlApp = null;
             Excel.Workbook xlWorkBook = null;
             try
@@ -121,29 +149,30 @@ namespace AdvansysPOC.Logic
                 Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(2);
                 AssignInputParameters(xlWorkSheet, input);
 
-                if (double.TryParse((xlWorkSheet.Cells[EBP_ROW, EBP_COLUMN] as Excel.Range).Text.ToString(), out double ebpValue))
-                {
-                    result.EBP = ebpValue;
-                }
+                //if (double.TryParse((xlWorkSheet.Cells[EBP_ROW, EBP_COLUMN] as Excel.Range).Text.ToString(), out double ebpValue))
+                //{
+                //    result.EBP = ebpValue;
+                //}
 
-                string HPString = (xlWorkSheet.Cells[HP_ROW, HP_COLUMN] as Excel.Range).Text.ToString();
-                if (!string.IsNullOrEmpty(HPString) && HPString.Contains(" HP"))
-                {
-                    result.HP = double.Parse(HPString.Replace("HP", "").TrimEnd());
-                }
+                //string HPString = (xlWorkSheet.Cells[HP_ROW, HP_COLUMN] as Excel.Range).Text.ToString();
+                //if (!string.IsNullOrEmpty(HPString) && HPString.Contains(" HP"))
+                //{
+                //    result.HP = double.Parse(HPString.Replace("HP", "").TrimEnd());
+                //}
 
-                if (int.TryParse((xlWorkSheet.Cells[LONG_SPRING_ROW, LONG_SPRING_COLUMN] as Excel.Range).Text.ToString(), out int longSpring))
-                {
-                    result.LongSpring = longSpring;
-                }
+                //if (int.TryParse((xlWorkSheet.Cells[LONG_SPRING_ROW, LONG_SPRING_COLUMN] as Excel.Range).Text.ToString(), out int longSpring))
+                //{
+                //    result.LongSpring = longSpring;
+                //}
 
-                if (int.TryParse((xlWorkSheet.Cells[SHORT_SPRING_ROW, SHORT_SPRING_COLUMN] as Excel.Range).Text.ToString(), out int shortSpring))
-                {
-                    result.ShortSpring = shortSpring;
-                }
-                string driveSize = (xlWorkSheet.Cells[DRIVE_SIZE_ROW, DRIVE_SIZE_COLUMN] as Excel.Range).Text.ToString();
-                if (!string.IsNullOrEmpty(driveSize)) driveSize = driveSize.Replace(" DIRECT DRIVE", "");
-                result.DriveSize = driveSize;
+                //if (int.TryParse((xlWorkSheet.Cells[SHORT_SPRING_ROW, SHORT_SPRING_COLUMN] as Excel.Range).Text.ToString(), out int shortSpring))
+                //{
+                //    result.ShortSpring = shortSpring;
+                //}
+                //string driveSize = (xlWorkSheet.Cells[DRIVE_SIZE_ROW, DRIVE_SIZE_COLUMN] as Excel.Range).Text.ToString();
+                //if (!string.IsNullOrEmpty(driveSize)) driveSize = driveSize.Replace(" DIRECT DRIVE", "");
+                //result.DriveSize = driveSize;
+                result = GetResults(xlWorkSheet);
             }
             catch (Exception e)
             {
@@ -164,7 +193,7 @@ namespace AdvansysPOC.Logic
         }
 
 
-        public static string DisplayLiveRollerCalculation(List<LiveRollerCalculationInputs> inputs)
+        public static Tuple<List<LiveRollerCalculationResult>, string> DisplayLiveRollerCalculation(List<LiveRollerCalculationInputs> inputs)
         {
             Microsoft.Office.Interop.Excel.Application xlApp = null;
             Excel.Workbook xlWorkBook = null;
@@ -175,9 +204,11 @@ namespace AdvansysPOC.Logic
 
                 Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(2);
                 List<Image> images = new List<Image>();
+                List<LiveRollerCalculationResult> results = new List<LiveRollerCalculationResult>();
                 for (int i = 0; i < inputs.Count; i++)
                 {
                     AssignInputParameters(xlWorkSheet, inputs[i]);
+                    results.Add(GetResults(xlWorkSheet));
                     dynamic x = xlWorkSheet.Range[CALCULATION_RANGE].CopyPicture(XlPictureAppearance.xlScreen, XlCopyPictureFormat.xlBitmap);
                     if (System.Windows.Clipboard.ContainsImage())
                     {
@@ -191,10 +222,11 @@ namespace AdvansysPOC.Logic
                 HPCalculationsView calculationsView = new HPCalculationsView();
                 calculationsView.AddImages(images);
                 calculationsView.Show();
+                return Tuple.Create<List<LiveRollerCalculationResult>, string>(results, null);
             }
             catch (Exception e)
             {
-                return e.Message;
+                return Tuple.Create<List<LiveRollerCalculationResult>, string>(new List<LiveRollerCalculationResult>(), e.Message);
             }
             finally
             {

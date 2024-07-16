@@ -1,4 +1,5 @@
-﻿using AdvansysPOC.Logic;
+﻿using AdvansysPOC.Helpers;
+using AdvansysPOC.Logic;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
@@ -64,7 +65,7 @@ namespace AdvansysPOC.Commands
                             detailedBeds.Add(bed);
                             length += lengthParameter.AsDouble();
                             rollerCenter = bed.LookupParameter(Constants.Roller_CenterToCenter).AsDouble() * 12;
-                        } 
+                        }
                         else if (bed.Symbol.FamilyName != Constants.GenericFamilyName && bed.LookupParameter(Constants.Drive_Speed) is Parameter speedParameter)
                         {
                             driveSpeed = speedParameter.AsDouble();
@@ -75,11 +76,22 @@ namespace AdvansysPOC.Commands
                 if (driveSpeed > 0) input.Speed = driveSpeed;
                 inputs.Add(input);
             }
-            string error = CalculationsManager.DisplayLiveRollerCalculation(inputs);
-            if (!string.IsNullOrEmpty(error))
+            Tuple<List<LiveRollerCalculationResult>, string> res = CalculationsManager.DisplayLiveRollerCalculation(inputs);
+            if (!string.IsNullOrEmpty(res.Item2))
             {
-                message = error;
+                message = res.Item2;
                 return Result.Failed;
+            }
+            using (Autodesk.Revit.DB.Transaction tr = new Autodesk.Revit.DB.Transaction(Doc))
+            {
+                tr.Start("HP calculations");
+                for (int i = 0; i < detailedUnits.Count; i++)
+                {
+                    detailedUnits[i].SetParameter(Constants.HP, (int)res.Item1[i].HP);
+                    detailedUnits[i].SetParameter(Constants.Center_Drive, res.Item1[i].DriveSize);
+                    detailedUnits[i].SetParameter(Constants.Conveyor_Speed, (int)inputs[i].Speed);
+                }
+                tr.Commit();
             }
             return Result.Succeeded;
         }
