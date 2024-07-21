@@ -324,6 +324,25 @@ namespace AdvansysPOC.Logic
             /// Efficient Belt Pull
             /// </summary>
             public double EBP { get; set; }
+
+            /// <summary>
+            /// Drice Size
+            /// </summary>
+            public int DriveSizeInt 
+            {
+                get
+                {
+                    if (!string.IsNullOrEmpty(DriveSize) && DriveSize.Contains("CD"))
+                    {
+                        string res = DriveSize.Replace("CD", "");
+                        if (int.TryParse(res, out int value))
+                        {
+                            return value;
+                        }
+                    }
+                    return 0;
+                }
+            }
         }
     }
 }

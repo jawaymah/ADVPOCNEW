@@ -46,6 +46,7 @@ namespace AdvansysPOC.Commands
                 message = "There are no Detailed family selected";
                 return Result.Failed;
             }
+            List<FamilyInstance> driveBeds = new List<FamilyInstance>();
             List<LiveRollerCalculationInputs> inputs = new List<LiveRollerCalculationInputs>();
             for (int i = 0; i < detailedUnits.Count; i++)
             {
@@ -69,6 +70,7 @@ namespace AdvansysPOC.Commands
                         else if (bed.Symbol.FamilyName != Constants.GenericFamilyName && bed.LookupParameter(Constants.Drive_Speed) is Parameter speedParameter)
                         {
                             driveSpeed = speedParameter.AsDouble();
+                            driveBeds.Add(bed);
                         }
                     }
                 }
@@ -90,6 +92,8 @@ namespace AdvansysPOC.Commands
                     detailedUnits[i].SetParameter(Constants.HP, res.Item1[i].HP);
                     detailedUnits[i].SetParameter(Constants.Center_Drive, res.Item1[i].DriveSize);
                     detailedUnits[i].SetParameter(Constants.Conveyor_Speed, inputs[i].Speed.ToString());
+                    driveBeds[i].SetParameter("CLR_MOTOR_HP", res.Item1[i].HP);
+                    driveBeds[i].SetParameter("CLR_DRIVE_SIZE", res.Item1[i].DriveSizeInt);
                 }
                 tr.Commit();
             }

@@ -131,7 +131,7 @@ namespace AdvansysPOC
                 double zoneLength = 0;
                 var memeberIds = assemblyInstance.GetMemberIds();
                 double driveSpeed = 0;
-                Stopwatch sw = Stopwatch.StartNew();
+                FamilyInstance driveBed = null;
                 foreach (var memeberId in memeberIds)
                 {
                     Element e = Globals.Doc.GetElement(memeberId);
@@ -147,6 +147,7 @@ namespace AdvansysPOC
                         if (bed.Symbol.FamilyName != Constants.GenericFamilyName && bed.LookupParameter(Constants.Drive_Speed) is Parameter speedParameter)
                         {
                             driveSpeed = speedParameter.AsDouble();
+                            driveBed = bed;
                         }
                     }
                 }
@@ -158,12 +159,15 @@ namespace AdvansysPOC
                 assemblyInstance.SetParameter(Constants.Center_Drive, res.Item1.DriveSize);
 
                 assemblyInstance.SetUnitId(unitId);
-                long et = sw.ElapsedMilliseconds;
-
                 assemblyInstance.SetParameter("Speed", driveSpeed.ToString());
                 assemblyInstance.SetParameter("Conveyor OAL", length);
                 assemblyInstance.SetParameter("Conveyor Width", width);
                 assemblyInstance.SetParameter("Zone Length", zoneLength);
+                if (driveBed != null)
+                {
+                    driveBed.SetParameter("CLR_MOTOR_HP", res.Item1.HP);
+                    driveBed.SetParameter("CLR_DRIVE_SIZE", res.Item1.DriveSizeInt);
+                }
 
                 //// Create the assembly instance
                 //AssemblyInstance assemblyInstance = AssemblyInstance.Create(Globals.Doc, elementIds, getSpoolNamingCategory());
