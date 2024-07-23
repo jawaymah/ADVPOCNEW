@@ -89,7 +89,7 @@ namespace AdvansysPOC.Logic
 
             XYZ direction = (endPoint - startPoint).Normalize();
             PlaceGuideRail(oal, grHeight, startPoint, direction, ref placedBeds, convWidth, elevation, ref error);
-
+            PlaceControlDevices(oal, grHeight, startPoint, direction, ref placedBeds, convWidth, elevation, zl, ref error);
             //Rotate if needed
 
             //Delete generic family
@@ -258,6 +258,144 @@ namespace AdvansysPOC.Logic
                 beds.Add(inst);
             }
                 
+        }
+
+        public List<FamilyInstance> PlaceControlDevices(double oal, double grHeight, XYZ startPoint, XYZ Direction, ref List<FamilyInstance> beds, int convWidth, double elevation, double zoneLength, ref string error)
+        {
+            List<FamilyInstance> devices = new List<FamilyInstance>();
+            PlacePEM(startPoint, oal, Direction, ref beds, convWidth, elevation, ref error);
+            XYZ motorLocation = PlaceMotor(startPoint, Direction, ref beds, convWidth, elevation, ref error);
+            XYZ DISCLocation = PlaceDISC(motorLocation, Direction, ref beds, convWidth, elevation, ref error);
+            PlaceVFD(DISCLocation, Direction, ref beds, convWidth, elevation, ref error);
+            PlaceZIM(startPoint, oal, Direction, ref beds, convWidth, elevation, ref error);
+            PlaceSolenoids(startPoint, oal, Direction, ref beds, convWidth, elevation, ref error);
+            PlacePowerSupplies(startPoint, oal, Direction, ref beds, convWidth, elevation, zoneLength, ref error);
+            return devices;
+        }
+        public void PlacePEM(XYZ startPoint, double oal, XYZ Direction, ref List<FamilyInstance> beds, int convWidth, double elevation, ref string error)
+        {
+            // Adding guiderails...
+            FamilySymbol PEMSymbol = FamilyHelper.getFamilySymbolwithoutTransaction(Constants.PEMFamilyName, Constants.PEMFamilyFileName, null, convWidth, ref error);
+            FamilyInstance ctf351 = beds.FirstOrDefault(b => b.Symbol.FamilyName == Constants.CTFFamilyName);
+            if (ctf351 != null)
+            {
+                XYZ normalizedDirection = Direction.Normalize();
+                double bedLength = ctf351.LookupParameter(Constants.Bed_Length).AsDouble();
+                //XYZ bedStartLocation = startPoint.Add(normalizedDirection*(3.5));
+                XYZ PEMLocation = (ctf351.Location as LocationPoint).Point.Add(normalizedDirection * (bedLength - 1));
+                XYZ normal = normalizedDirection.CrossProduct(new XYZ(0, 0, 1));
+                PEMLocation = PEMLocation.Add(normal * 0.5 * convWidth / 12);
+                //XYZ PEMLocation = PEMLocation.Subtract(normalizedDirection).Add(normalizedDirection.CrossProduct(new XYZ(0, 0, 1) * convWidth / 2));
+                FamilyInstance startPEM = FamilyHelper.placePointFamilyWithSubTransaction(PEMSymbol, PEMLocation, 0);
+                beds.Add(startPEM);
+                XYZ endPEMLocation = startPoint.Add(normalizedDirection * (oal - 1.5)).Add(normal * convWidth * 0.5 / 12);
+                FamilyInstance endPEM = FamilyHelper.placePointFamilyWithSubTransaction(PEMSymbol, endPEMLocation, 0);
+                beds.Add(endPEM);
+            }
+        }
+
+        public XYZ PlaceMotor(XYZ startPoint, XYZ Direction, ref List<FamilyInstance> beds, int convWidth, double elevation, ref string error)
+        {
+            // Adding guiderails...
+            FamilySymbol motorSymbol = FamilyHelper.getFamilySymbolwithoutTransaction(Constants.MotorFamilyName, Constants.MotorFamilyFileName, null, convWidth, ref error);
+            FamilyInstance c370 = beds.FirstOrDefault(b => b.Symbol.FamilyName == Constants.DriveFamilyName);
+            if (c370 != null)
+            {
+                XYZ normalizedDirection = Direction.Normalize();
+                XYZ bedStartLocation = (c370.Location as LocationPoint).Point;
+                XYZ motorLocation = bedStartLocation.Add(normalizedDirection * 6);
+                FamilyInstance inst = FamilyHelper.placePointFamilyWithSubTransaction(motorSymbol, motorLocation, 0);
+                beds.Add(inst);
+                return motorLocation;
+            }
+            return null;
+        }
+
+        public XYZ PlaceDISC(XYZ motorLoction, XYZ Direction, ref List<FamilyInstance> beds, int convWidth, double elevation, ref string error)
+        {
+            FamilySymbol DISCSymbol = FamilyHelper.getFamilySymbolwithoutTransaction(Constants.DISCFamilyName, Constants.DISCFamilyFileName, null, convWidth, ref error);
+            if (motorLoction != null && DISCSymbol != null)
+            {
+                XYZ normalizedDirection = Direction.Normalize();
+                double offset = (convWidth * 0.5 / 12) + 0.3;
+                XYZ DISCLocation = motorLoction.Add(normalizedDirection.CrossProduct(new XYZ(0, 0, 1)) * offset);
+                FamilyInstance inst = FamilyHelper.placePointFamilyWithSubTransaction(DISCSymbol, DISCLocation, 0);
+                beds.Add(inst);
+                return DISCLocation;
+            }
+            return null;
+        }
+
+
+        public void PlaceVFD(XYZ DISCLocation, XYZ Direction, ref List<FamilyInstance> beds, int convWidth, double elevation, ref string error)
+        {
+            // Adding guiderails...
+            FamilySymbol VFDSymbol = FamilyHelper.getFamilySymbolwithoutTransaction(Constants.VFDFamilyName, Constants.VFDFamilyFileName, null, convWidth, ref error);
+            FamilyInstance c370 = beds.FirstOrDefault(b => b.Symbol.FamilyName == Constants.DriveFamilyName);
+            if (c370 != null)
+            {
+                XYZ normalizedDirection = Direction.Normalize();
+                XYZ bedStartLocation = (c370.Location as LocationPoint).Point;
+                XYZ VFDLocation = DISCLocation.Add(normalizedDirection);
+                VFDLocation = VFDLocation.Add(normalizedDirection * convWidth * 0.5 / 12);
+                FamilyInstance inst = FamilyHelper.placePointFamilyWithSubTransaction(VFDSymbol, VFDLocation, 0);
+                beds.Add(inst);
+            }
+        }
+
+        public void PlaceZIM(XYZ startPoint, double oal, XYZ Direction, ref List<FamilyInstance> beds, int convWidth, double elevation, ref string error)
+        {
+            // Adding guiderails...
+            FamilySymbol ZIMSymbol = FamilyHelper.getFamilySymbolwithoutTransaction(Constants.ZIMFamilyName, Constants.ZIMFamilyFileName, null, convWidth, ref error);
+            if (ZIMSymbol != null)
+            {
+                XYZ normalizedDirection = Direction.Normalize();
+                XYZ normal = normalizedDirection.CrossProduct(new XYZ(0, 0, 1));
+                XYZ ZIMLocation = startPoint.Add(normalizedDirection * (oal - 2 - ((double)2 / 12)));
+                double offset = (convWidth * 0.5 / 12) + 0.3;
+                ZIMLocation = ZIMLocation.Add(normal * offset);
+                FamilyInstance inst = FamilyHelper.placePointFamilyWithSubTransaction(ZIMSymbol, ZIMLocation, 0);
+                beds.Add(inst);
+            }
+        }
+
+        public void PlaceSolenoids(XYZ startPoint, double oal, XYZ Direction, ref List<FamilyInstance> beds, int convWidth, double elevation, ref string error)
+        {
+            FamilySymbol solSymbol = FamilyHelper.getFamilySymbolwithoutTransaction(Constants.SolenoidFamilyName, Constants.SolenoidFamilyFileName, null, convWidth, ref error);
+            if (solSymbol != null)
+            {
+                XYZ normalizedDirection = Direction.Normalize();
+                XYZ solLocation = startPoint.Add(normalizedDirection * (oal - 1.5));
+                FamilyInstance inst = FamilyHelper.placePointFamilyWithSubTransaction(solSymbol, solLocation, 0);
+                beds.Add(inst);
+            }
+        }
+
+        public void PlacePowerSupplies(XYZ startPoint, double oal, XYZ Direction, ref List<FamilyInstance> beds, int convWidth, double elevation, double zoneLength, ref string error)
+        {
+            FamilySymbol powerSupplySymbol = FamilyHelper.getFamilySymbolwithoutTransaction(Constants.PowerSupplyFamilyName, Constants.PowerSupplyFamilyFileName, null, convWidth, ref error);
+            if (powerSupplySymbol != null)
+            {
+                int zonesCount = (int)Math.Ceiling((double)oal / zoneLength);
+                List<XYZ> locatons = new List<XYZ>();
+                XYZ normalizedDirection = Direction.Normalize();
+                if (zonesCount > Constants.MaxZonesPerPowerSupply)
+                {
+                    locatons.Add(startPoint.Add(normalizedDirection * 0.25 * oal));
+                    locatons.Add(startPoint.Add(normalizedDirection * 0.75 * oal));
+                }
+                else
+                {
+                    locatons.Add(startPoint.Add(normalizedDirection * 0.5 * oal));
+                }
+                XYZ reverseNormal = normalizedDirection.CrossProduct(new XYZ(0, 0, -1));
+                for (int i = 0; i < locatons.Count; i++)
+                {
+                    locatons[i] = locatons[i].Add(reverseNormal * convWidth * 0.5 / 12);
+                    FamilyInstance inst = FamilyHelper.placePointFamilyWithSubTransaction(powerSupplySymbol, locatons[i], 0);
+                    beds.Add(inst);
+                }
+            }
         }
 
         /*

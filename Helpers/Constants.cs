@@ -44,6 +44,22 @@ namespace AdvansysPOC
         public static string GuideRailFamilyFileName = "C2000.rfa";
         public static string GuideRailFamilyName = "C2000";
 
-        
+        //Controls families
+        public const string PEMFamilyName = "PEM";
+        public const string PEMFamilyFileName = "PEM.rfa";
+        public const string MotorFamilyName = "Motor";
+        public const string MotorFamilyFileName = "Motor.rfa";
+        public const string DISCFamilyName = "DISC";
+        public const string DISCFamilyFileName = "DISC.rfa";
+        public const string VFDFamilyName = "VFD";
+        public const string VFDFamilyFileName = "VFD.rfa";
+        public const string ZIMFamilyName = "ZIM";
+        public const string ZIMFamilyFileName = "ZIM.rfa";
+        public const string PowerSupplyFamilyName = "C389";
+        public const string PowerSupplyFamilyFileName = "C389.rfa";
+        public const string SolenoidFamilyName = "SOL";
+        public const string SolenoidFamilyFileName = "SOL.rfa";
+
+        public const int MaxZonesPerPowerSupply = 33;
     }
 }
