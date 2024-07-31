@@ -10,6 +10,8 @@ using System;
 using System.IO;
 using System.Diagnostics;
 using Autodesk.Revit.DB;
+using System.Windows.Forms;
+using System.Net.Mail;
 
 namespace AdvansysPOC.Logic.Sym3Export
 {
@@ -176,22 +178,30 @@ namespace AdvansysPOC.Logic.Sym3Export
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 var utf8 = Encoding.GetEncoding("UTF-8");
                 // Save the Excel file with UTF-8 encoding
-                FileInfo excelFile = new FileInfo(filePath);
+                //FileInfo excelFile = new FileInfo(filePath);
                 //using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 //{
                 //    package.SaveAs(fileStream);
                 //}
-
-                // Save to a MemoryStream
-                using (MemoryStream memoryStream = new MemoryStream())
+                try
                 {
-                    package.SaveAs(memoryStream);
+                    filePath = IOHelper.GetSaveFilePath(filePath);
+                    // Save to a MemoryStream
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        package.SaveAs(memoryStream);
 
-                    // Write MemoryStream to file
-                    File.WriteAllBytes(filePath, memoryStream.ToArray());
+                        // Write MemoryStream to file
+                        File.WriteAllBytes(filePath, memoryStream.ToArray());
+                    }
+
+                    Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                }
+                catch (Exception)
+                {
+                    Autodesk.Revit.UI.TaskDialog.Show("Export Error", "Please close the excel file before exporting ...");
                 }
 
-                Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
                 Console.WriteLine($"Excel file '{filePath}' created successfully.");
             }
 

@@ -11,6 +11,7 @@ namespace AdvansysPOC.Logic
     {
         public List<DetailedBed> Beds { get; set; }
         public double TotalLength { get; set; }
+        public double ConveyorIn { get; set; }
         public XYZ StartPoint { get; set; }
         public XYZ EndPoint { get; set; }
         public DetailedUnit PrevUnit { get; set; }
@@ -38,6 +39,11 @@ namespace AdvansysPOC.Logic
                 if (name == Constants.EntranceBedFamilyName)
                 {
                     StartPoint = (inst.Location as LocationPoint).Point;
+                    Parameter p = inst.LookupParameter(Constants.Conveyor_Elevation_In);
+                    if (p != null)
+                    {
+                        ConveyorIn = p.AsDouble();
+                    }
                 }
                 if (name == Constants.ExitBedFamilyName)
                 {
@@ -108,7 +114,7 @@ namespace AdvansysPOC.Logic
 
         public string Z()
         {
-            return StartPoint.Z.ToString();
+            return (StartPoint.Z + ConveyorIn).ToString();
         }
 
         public string direction()

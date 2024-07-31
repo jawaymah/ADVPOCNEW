@@ -101,7 +101,7 @@ namespace AdvansysPOC.Logic
         }
 
 
-        public List<FamilyInstance> PlaceSupports(FamilyInstance parentBed, string unitId, double elevation, int width)
+        public List<FamilyInstance> PlaceSupports(FamilyInstance parentBed, string unitId, double elevation, int width, bool hasHanger)
         {
             double conveyorIn = 2.5;
             if (parentBed != null)
@@ -120,7 +120,11 @@ namespace AdvansysPOC.Logic
                 familyName = Constants.LongSupportFamilyName;
                 fileName = Constants.LongSupportFamilyFileName;
             }
-
+            if (hasHanger)
+            {
+                familyName = Constants.HangerSupportFamilyName;
+                fileName = Constants.HangerSupportFamilyFileName;
+            }
             List<FamilyInstance> supports = new List<FamilyInstance>();
             FamilySymbol symbol = FamilyHelper.getFamilySymbolwithoutTransaction(familyName, fileName, null,width,  ref error);
             FamilyInstance insStart = FamilyHelper.placePointFamilyWithSubTransaction(symbol, StartPoint, Length);

@@ -66,10 +66,16 @@ namespace AdvansysPOC.Logic
 
 
             // Get zone length from generic conveyor...
-
+            double zl = 2;
             Parameter zoneLength = instance.LookupParameter("Zone_Length");
+            if (zoneLength != null)
+                zl = zoneLength.AsDouble();
 
-            double zl = zoneLength.AsDouble();
+            // check if the generic conveyor has Ceiling support...
+            bool ceilingSupport = false;
+            Parameter hasceilingSupport = instance.LookupParameter(Constants.HasHungerSupport);
+            if (hasceilingSupport != null)
+                ceilingSupport = hasceilingSupport.AsInteger() == 1;
 
             // Placing beds in order...
             List<DetailedBed> bedsTobeInserted = GetBedsLogic(startPoint, endPoint, (int)zl);
@@ -83,7 +89,7 @@ namespace AdvansysPOC.Logic
                 {
                     placedBeds.Add(bed.PlaceDrive(isLeftHand, unitId, elevation, speed));
                 }
-                placedBeds.AddRange(bed.PlaceSupports(inst, unitId, elevation, convWidth));
+                placedBeds.AddRange(bed.PlaceSupports(inst, unitId, elevation, convWidth, ceilingSupport));
 
             }
 

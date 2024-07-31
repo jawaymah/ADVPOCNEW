@@ -23,7 +23,7 @@ namespace AdvansysPOC
         public const string HP = "HP";
         public const string GR_Height = "GR_HEIGHT";
         public const string Conveyor_Speed = "Speed";
-
+        public const string HasHungerSupport = "CEILING_SUPPORT";
 
         public static string EntranceBedFamilyName = "C380_ENTRY";
         public static string EntranceBedFileName = "C380_ENTRY.rfa";
@@ -41,6 +41,8 @@ namespace AdvansysPOC
         public static string SupportFamilyName = "C2101";
         public static string LongSupportFamilyFileName = "C2201.rfa";
         public static string LongSupportFamilyName = "C2201";
+        public static string HangerSupportFamilyFileName = "C2112.rfa";
+        public static string HangerSupportFamilyName = "C2112";
         public static string GuideRailFamilyFileName = "C2000.rfa";
         public static string GuideRailFamilyName = "C2000";
 
