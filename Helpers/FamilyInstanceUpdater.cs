@@ -33,6 +33,7 @@ namespace AdvansysPOC.Helpers
                     {
                         family.SetUnitId();
                         family.SetParameter(Constants.Drive_Speed, 200.0);
+                        family.SetParameter("GR_Height", 3);
                     }
                 }
             }
