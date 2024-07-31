@@ -71,16 +71,19 @@ namespace AdvansysPOC
                 //Register document changed to get placed families and treat them as a unit
                 try
                 {
-                    //PromptForFamilyInstancePlacementOptions options = new PromptForFamilyInstancePlacementOptions();
-                    //options.FaceBasedPlacementType = FaceBasedPlacementType.PlaceOnWorkPlane;
+                    PromptForFamilyInstancePlacementOptions options = new PromptForFamilyInstancePlacementOptions();
+                    options.FaceBasedPlacementType = FaceBasedPlacementType.PlaceOnWorkPlane;
                     //uiApp.ActiveUIDocument.PromptForFamilyInstancePlacement(symbol);
 
+                    //symbol.DesignOption;
                     uiApp.ActiveUIDocument.PostRequestForElementTypePlacement(symbol);
                 }
                 catch (Autodesk.Revit.Exceptions.OperationCanceledException ex)
                 {
 
                 }
+
+
 
                 return Result.Succeeded;
             }
