@@ -138,12 +138,22 @@ namespace AdvansysPOC.Logic
             brakeBed.StartPoint = exitBed.StartPoint - (12) * direction;
             brakeBed.Direction = direction;
 
-            outBeds.Add(entryBed);
+            bool hasEntry = true; ////to be read from parameter
+            bool hasEnd = true; //to be read from parameter
+
+            if (hasEntry) outBeds.Add(entryBed);
             outBeds.Add(brakeBed);
-            outBeds.Add(exitBed);
+            if (hasEnd) outBeds.Add(exitBed);
+
+            double remainingLength = oal;
 
             // Remaining length after deducting enter, exit, brake...
-            double remainingLength = oal - entryBed.Length - exitBed.Length - brakeBed.Length;
+            foreach (var bed in outBeds)
+            {
+                remainingLength -= bed.Length;
+            }
+
+            //double remainingLength = oal - entryBed.Length - exitBed.Length - brakeBed.Length;
 
             if ((int) remainingLength / 12 == 0)
             {
