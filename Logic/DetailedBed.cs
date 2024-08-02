@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Office.Interop.Excel;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace AdvansysPOC.Logic
@@ -15,6 +16,14 @@ namespace AdvansysPOC.Logic
         public DetailedBed()
         {
             this.HasDrive = false;
+        }
+
+        public DetailedBed(XYZ direction)
+        {
+            this.HasDrive = false;
+            //this.StartPoint = new XYZ(0, 0, 0);
+            this.Length = 0;
+            this.Direction = direction;
         }
         //public DetailedBed NextBed { get; set; }
         //public DetailedBed PrevBed { get; set; }
@@ -101,7 +110,7 @@ namespace AdvansysPOC.Logic
         }
 
 
-        public List<FamilyInstance> PlaceSupports(FamilyInstance parentBed, string unitId, double elevation, int width, bool hasHanger)
+        public List<FamilyInstance> PlaceSupports(FamilyInstance parentBed, string unitId, double elevation, int width, bool hasHanger, bool forceExit)
         {
             double conveyorIn = 2.5;
             if (parentBed != null)
@@ -136,7 +145,7 @@ namespace AdvansysPOC.Logic
                 insStart.SetParameter(Constants.Conveyor_Elevation_In, elevation);
             }
             supports.Add(insStart);
-            if (BedType == BedType.ExitBed)
+            if (BedType == BedType.ExitBed || forceExit)
             {
                 FamilyInstance insEnd = FamilyHelper.placePointFamilyWithSubTransaction(symbol, GetEndPoint(), Length);
                 if (insEnd != null)
@@ -149,8 +158,52 @@ namespace AdvansysPOC.Logic
                 supports.Add(insEnd);
             }
 
+
             return supports;
 
+        }
+
+        public FamilyInstance PlaceExitSupport(FamilyInstance parentBed, XYZ lastPoint, double elevation, bool hasHanger, string unitId, int width)
+        {
+
+            double conveyorIn = 2.5;
+            if (parentBed != null)
+            {
+                var parameter = parentBed.LookupParameter(Constants.Conveyor_Elevation_In);
+                if (parameter != null)
+                {
+                    conveyorIn = parameter.AsDouble();
+                }
+            }
+            string error = "";
+
+
+            string familyName = Constants.SupportFamilyName;
+            string fileName = Constants.SupportFamilyFileName;
+            if (elevation > 10.5)
+            {
+                familyName = Constants.LongSupportFamilyName;
+                fileName = Constants.LongSupportFamilyFileName;
+            }
+            if (hasHanger)
+            {
+                familyName = Constants.HangerSupportFamilyName;
+                fileName = Constants.HangerSupportFamilyFileName;
+            }
+            List<FamilyInstance> supports = new List<FamilyInstance>();
+            FamilySymbol symbol = FamilyHelper.getFamilySymbolwithoutTransaction(familyName, fileName, null, width, ref error);
+
+
+            FamilyInstance insEnd = FamilyHelper.placePointFamilyWithSubTransaction(symbol, lastPoint, Length);
+            if (insEnd != null)
+            {
+                insEnd.RotateFamilyToDirection(Globals.Doc, Direction, lastPoint);
+                insEnd.SetTypeParameter(Constants.Conveyor_Elevation_In, conveyorIn);
+                insEnd.SetUnitId(unitId);
+                insEnd.SetParameter(Constants.Conveyor_Elevation_In, elevation);
+            }
+
+            return insEnd;
         }
     }
 }

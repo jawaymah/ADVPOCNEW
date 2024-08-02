@@ -77,8 +77,15 @@ namespace AdvansysPOC.Logic
             if (hasceilingSupport != null)
                 ceilingSupport = hasceilingSupport.AsInteger() == 1;
 
+            Parameter hasEntry = instance.LookupParameter("Child_Entry");
+            bool hasEntryValue = hasEntry.AsInteger() == 0;
+            
+            Parameter hasExit = instance.LookupParameter("Child_Exit");
+            bool hasExitValue = hasExit.AsInteger() == 0;
+
+
             // Placing beds in order...
-            List<DetailedBed> bedsTobeInserted = GetBedsLogic(startPoint, endPoint, (int)zl);
+            List<DetailedBed> bedsTobeInserted = GetBedsLogic(startPoint, endPoint, (int)zl, hasEntryValue, hasExitValue);
             List<FamilyInstance> placedBeds = new List<FamilyInstance>();
             foreach (var bed in bedsTobeInserted)
             {
@@ -89,11 +96,17 @@ namespace AdvansysPOC.Logic
                 {
                     placedBeds.Add(bed.PlaceDrive(isLeftHand, unitId, elevation, speed));
                 }
-                placedBeds.AddRange(bed.PlaceSupports(inst, unitId, elevation, convWidth, ceilingSupport));
+                placedBeds.AddRange(bed.PlaceSupports(inst, unitId, elevation, convWidth, ceilingSupport, false));
 
             }
+            if (!hasExitValue)
+            {
+                placedBeds.Add(bedsTobeInserted.First().PlaceExitSupport(placedBeds.First(), endPoint, elevation, ceilingSupport, unitId, convWidth));
+            }
+
 
             XYZ direction = (endPoint - startPoint).Normalize();
+            Globals.Doc.Regenerate();
             PlaceGuideRail(oal, grHeight, startPoint, direction, ref placedBeds, convWidth, elevation, ref error);
             PlaceControlDevices(oal, grHeight, startPoint, direction, ref placedBeds, convWidth, elevation, zl, ref error);
             //Rotate if needed
@@ -105,7 +118,7 @@ namespace AdvansysPOC.Logic
     }
 
 
-        public List<DetailedBed> GetBedsLogic(XYZ startpoint, XYZ endpoint, int zoneLength)
+        public List<DetailedBed> GetBedsLogic(XYZ startpoint, XYZ endpoint, int zoneLength, bool hasEntry, bool hasExit)
         {
             List<DetailedBed> outBeds = new List<DetailedBed>();
 
@@ -118,18 +131,31 @@ namespace AdvansysPOC.Logic
             //double oal = (int) (startpoint.DistanceTo(endpoint) * 12) / 12.0;
 
             //Entry...
-            DetailedBed entryBed = new DetailedBed();
-            entryBed.BedType = BedType.EntryBed;
-            entryBed.StartPoint = startpoint;
-            entryBed.Length = entryExitLength;
-            entryBed.Direction = direction;
+            DetailedBed entryBed = new DetailedBed(direction);
+            if (hasEntry)
+            {
+                entryBed.BedType = BedType.EntryBed;
+                entryBed.StartPoint = startpoint;
+                entryBed.Length = entryExitLength;
+            }
+            else
+            {
+                entryBed.StartPoint = startpoint;
+            }
 
             //Exit...
-            DetailedBed exitBed = new DetailedBed();
-            exitBed.BedType = BedType.ExitBed;
-            exitBed.Length = entryExitLength;
-            exitBed.StartPoint = endpoint - entryExitLength * direction;
-            exitBed.Direction = direction;
+            DetailedBed exitBed = new DetailedBed(direction);
+            if (hasExit)
+            {
+                exitBed.BedType = BedType.ExitBed;
+                exitBed.Length = entryExitLength;
+                exitBed.StartPoint = endpoint - entryExitLength * direction;
+            }
+            else
+            {
+                exitBed.StartPoint = endpoint;
+            }
+
 
             //Brake...
             DetailedBed brakeBed = new DetailedBed();
@@ -138,12 +164,9 @@ namespace AdvansysPOC.Logic
             brakeBed.StartPoint = exitBed.StartPoint - (12) * direction;
             brakeBed.Direction = direction;
 
-            bool hasEntry = true; ////to be read from parameter
-            bool hasEnd = true; //to be read from parameter
-
             if (hasEntry) outBeds.Add(entryBed);
             outBeds.Add(brakeBed);
-            if (hasEnd) outBeds.Add(exitBed);
+            if (hasExit) outBeds.Add(exitBed);
 
             double remainingLength = oal;
 
